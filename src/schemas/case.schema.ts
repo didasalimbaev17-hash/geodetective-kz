@@ -239,7 +239,7 @@ export const scenarioSchema = z.object({
 
   explanationTask: z.object({
     prompt: localizedText,
-    minWords: z.number().default(150),
+    minWords: z.number().default(50),
     maxWords: z.number().default(400),
     language: z.enum(["kk", "ru"]).default("kk"),
   }),
