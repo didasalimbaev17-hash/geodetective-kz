@@ -13,33 +13,27 @@ type CaseSlug =
 export function CaseCover({
   slug,
   className,
-  variant = "wide",
 }: {
   slug: string;
   className?: string;
-  variant?: "wide" | "square";
 }) {
   const Comp = COVERS[slug as CaseSlug] ?? FallbackCover;
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      <Comp variant={variant} />
+      <Comp />
     </div>
   );
 }
 
-type SubProps = { variant: "wide" | "square" };
+// Все SVG: viewBox 800×500. Композиция: главные объекты в центре по вертикали (y=200..400),
+// декоративные элементы — фон / по краям. Текстовые метки удалены — заголовок есть на карточке.
 
 // ============================================================
-// 1. ARAL — высыхающее море с кораблём
+// 1. ARAL — корабль на пустынном дне
 // ============================================================
-function AralCover({ variant }: SubProps) {
+function AralCover() {
   return (
-    <svg
-      viewBox="0 0 800 500"
-      className="w-full h-full"
-      preserveAspectRatio={variant === "square" ? "xMidYMid slice" : "xMidYMid slice"}
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="aral-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#1a1d2e" />
@@ -50,147 +44,149 @@ function AralCover({ variant }: SubProps) {
           <stop offset="0%" stopColor="#8a5a30" />
           <stop offset="100%" stopColor="#3d2818" />
         </linearGradient>
-        <radialGradient id="aral-sun" cx="0.7" cy="0.3" r="0.4">
-          <stop offset="0%" stopColor="#ffb84a" stopOpacity="0.9" />
+        <radialGradient id="aral-sun" cx="0.7" cy="0.3" r="0.6">
+          <stop offset="0%" stopColor="#ffb84a" stopOpacity="0.8" />
           <stop offset="100%" stopColor="#ffb84a" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* Sky */}
-      <rect width="800" height="320" fill="url(#aral-sky)" />
-      {/* Sun glow */}
-      <rect width="800" height="320" fill="url(#aral-sun)" />
-      {/* Sun */}
-      <circle cx="560" cy="160" r="38" fill="#ffd27a" opacity="0.8" />
+      <rect width="800" height="500" fill="url(#aral-sky)" />
+      <rect width="800" height="500" fill="url(#aral-sun)" />
 
-      {/* Distant water (small remnant) */}
-      <ellipse cx="650" cy="320" rx="180" ry="22" fill="#2a5a78" opacity="0.7" />
-      <ellipse cx="650" cy="318" rx="170" ry="16" fill="#3da9c9" opacity="0.5" />
+      {/* Sun */}
+      <circle cx="600" cy="180" r="42" fill="#ffd27a" opacity="0.9" />
+
+      {/* Distant water remnant */}
+      <ellipse cx="650" cy="330" rx="190" ry="20" fill="#2a5a78" opacity="0.7" />
+      <ellipse cx="650" cy="328" rx="170" ry="14" fill="#3da9c9" opacity="0.6" />
 
       {/* Sand / dry seabed */}
       <path d="M 0 320 L 800 320 L 800 500 L 0 500 Z" fill="url(#aral-sand)" />
 
-      {/* Cracked earth pattern */}
-      <g stroke="#4a2f1a" strokeWidth="1" opacity="0.4" fill="none">
-        <path d="M 50 380 L 120 360 L 180 390 M 200 410 L 280 400 L 320 430" />
-        <path d="M 350 400 L 420 380 L 480 405 M 50 450 L 150 440 L 220 460" />
-        <path d="M 500 440 L 580 425 L 650 450 M 280 470 L 380 460 L 450 480" />
+      {/* Cracked earth */}
+      <g stroke="#4a2f1a" strokeWidth="1" opacity="0.5" fill="none">
+        <path d="M 30 380 L 130 360 L 200 390 M 220 410 L 320 400 L 380 430" />
+        <path d="M 400 400 L 500 380 L 580 405 M 30 460 L 160 450 L 240 470" />
+        <path d="M 560 450 L 660 435 L 740 460 M 280 480 L 400 470 L 480 490" />
       </g>
 
       {/* Salt patches */}
-      <ellipse cx="180" cy="395" rx="55" ry="6" fill="#e8e0c8" opacity="0.5" />
-      <ellipse cx="380" cy="430" rx="42" ry="5" fill="#e8e0c8" opacity="0.5" />
-      <ellipse cx="540" cy="460" rx="60" ry="7" fill="#e8e0c8" opacity="0.5" />
+      <ellipse cx="200" cy="395" rx="65" ry="6" fill="#e8e0c8" opacity="0.6" />
+      <ellipse cx="420" cy="430" rx="50" ry="6" fill="#e8e0c8" opacity="0.5" />
+      <ellipse cx="600" cy="465" rx="70" ry="8" fill="#e8e0c8" opacity="0.5" />
 
-      {/* Rusted ship — главная фишка */}
-      <g transform="translate(180, 290)">
+      {/* Rusted ship — main subject, large, centered */}
+      <g transform="translate(370, 230)">
         {/* Hull */}
         <path
-          d="M 0 80 L 20 50 L 180 50 L 200 80 L 180 110 L 20 110 Z"
+          d="M 0 100 L 25 60 L 230 60 L 255 100 L 230 140 L 25 140 Z"
           fill="#5a3020"
           stroke="#3a1f10"
           strokeWidth="2"
         />
         {/* Deck */}
-        <rect x="60" y="20" width="80" height="30" fill="#6a4030" stroke="#3a1f10" />
+        <rect x="75" y="25" width="100" height="35" fill="#6a4030" stroke="#3a1f10" />
         {/* Cabin */}
-        <rect x="80" y="0" width="40" height="20" fill="#7a5040" stroke="#3a1f10" />
+        <rect x="100" y="0" width="50" height="25" fill="#7a5040" stroke="#3a1f10" />
+        {/* Window */}
+        <rect x="115" y="8" width="20" height="10" fill="#4a3020" />
         {/* Mast */}
-        <line x1="100" y1="0" x2="100" y2="-30" stroke="#3a1f10" strokeWidth="2" />
+        <line x1="125" y1="0" x2="125" y2="-40" stroke="#3a1f10" strokeWidth="3" />
+        <line x1="125" y1="-20" x2="160" y2="-10" stroke="#3a1f10" strokeWidth="1.5" />
         {/* Rust streaks */}
-        <path d="M 30 60 L 35 100 M 50 55 L 55 105 M 150 55 L 155 100 M 170 60 L 175 100" stroke="#8a4020" strokeWidth="1" opacity="0.7" />
+        <path d="M 40 70 L 45 130 M 70 65 L 75 135 M 180 65 L 185 130 M 215 70 L 220 130" stroke="#8a4020" strokeWidth="1.5" opacity="0.7" />
+        {/* Anchor chain */}
+        <path d="M 0 130 L -40 200" stroke="#3a1f10" strokeWidth="2" strokeDasharray="3 2" />
         {/* Shadow */}
-        <ellipse cx="100" cy="115" rx="120" ry="6" fill="#000" opacity="0.4" />
+        <ellipse cx="125" cy="148" rx="155" ry="8" fill="#000" opacity="0.5" />
       </g>
 
-      {/* Title overlay corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3" opacity="0.9">
-          ARAL · 1960→2025
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700" opacity="0.95">
-          −13×
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          AREA SHRINKAGE
-        </text>
-      </g>
+      {/* Bird silhouette */}
+      <path d="M 100 130 Q 110 122 120 130 Q 130 122 140 130" stroke="#1a1d2e" strokeWidth="1.5" fill="none" opacity="0.6" />
     </svg>
   );
 }
 
 // ============================================================
-// 2. BALKHASH — озеро двух цветов с горами
+// 2. BALKHASH — два цвета озера в горах
 // ============================================================
-function BalkhashCover({ variant }: SubProps) {
+function BalkhashCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="bh-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0e1830" />
           <stop offset="100%" stopColor="#2a4a70" />
         </linearGradient>
         <linearGradient id="bh-water-fresh" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3da9c9" />
+          <stop offset="0%" stopColor="#5cc8e3" />
           <stop offset="100%" stopColor="#1a4a68" />
         </linearGradient>
         <linearGradient id="bh-water-salt" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#a8b8a0" />
+          <stop offset="0%" stopColor="#c8d8b0" />
           <stop offset="100%" stopColor="#5a6a55" />
         </linearGradient>
       </defs>
 
       <rect width="800" height="500" fill="url(#bh-sky)" />
 
-      {/* Mountains */}
-      <path d="M 0 280 L 120 180 L 200 220 L 320 140 L 440 200 L 560 160 L 680 220 L 800 180 L 800 320 L 0 320 Z" fill="#1a2540" opacity="0.9" />
-      <path d="M 0 280 L 120 180 L 200 220 L 320 140 L 440 200 L 560 160 L 680 220 L 800 180" stroke="#3a4560" strokeWidth="1" fill="none" />
+      {/* Stars */}
+      <g fill="#ffffff" opacity="0.6">
+        <circle cx="80" cy="50" r="1" />
+        <circle cx="200" cy="80" r="0.8" />
+        <circle cx="350" cy="40" r="1.2" />
+        <circle cx="550" cy="70" r="1" />
+        <circle cx="700" cy="50" r="0.8" />
+        <circle cx="450" cy="100" r="0.8" />
+      </g>
+
+      {/* Distant mountains range */}
+      <path d="M 0 260 L 100 180 L 180 220 L 280 130 L 380 200 L 480 150 L 580 200 L 680 160 L 800 200 L 800 320 L 0 320 Z" fill="#1a2540" />
+      <path d="M 0 260 L 100 180 L 180 220 L 280 130 L 380 200 L 480 150 L 580 200 L 680 160 L 800 200" stroke="#3a4560" strokeWidth="1" fill="none" opacity="0.6" />
 
       {/* Snow caps */}
-      <path d="M 100 195 L 120 180 L 140 195 Z M 300 155 L 320 140 L 340 155 Z M 540 175 L 560 160 L 580 175 Z" fill="#e8e8f0" opacity="0.8" />
+      <path d="M 80 195 L 100 180 L 120 195 Z M 260 145 L 280 130 L 300 145 Z M 460 165 L 480 150 L 500 165 Z M 660 175 L 680 160 L 700 175 Z" fill="#e8e8f0" opacity="0.85" />
 
-      {/* Mountains reflection */}
-      <path d="M 0 320 L 120 380 L 200 350 L 320 410 L 440 360 L 560 400 L 680 350 L 800 380 L 800 500 L 0 500 Z" fill="#0a1428" opacity="0.6" />
+      {/* Foreground hills */}
+      <path d="M 0 320 L 200 280 L 400 310 L 600 285 L 800 315 L 800 360 L 0 360 Z" fill="#0f1828" />
 
-      {/* Lake — two halves */}
+      {/* Lake — two halves, large center */}
       <g>
-        {/* Fresh (west) */}
-        <ellipse cx="280" cy="380" rx="280" ry="60" fill="url(#bh-water-fresh)" />
-        {/* Salty (east) */}
-        <ellipse cx="600" cy="380" rx="200" ry="55" fill="url(#bh-water-salt)" />
-        {/* Divider line where halves meet */}
-        <line x1="445" y1="340" x2="445" y2="420" stroke="#E8A93C" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
+        {/* Fresh (west) — bright cyan */}
+        <ellipse cx="280" cy="400" rx="280" ry="60" fill="url(#bh-water-fresh)" />
+        {/* Salt (east) — pale grey-green */}
+        <ellipse cx="600" cy="400" rx="220" ry="55" fill="url(#bh-water-salt)" />
+        {/* Divider — dashed amber line */}
+        <line x1="445" y1="350" x2="445" y2="450" stroke="#E8A93C" strokeWidth="2" strokeDasharray="6 4" opacity="0.7" />
+        {/* Glow on divider */}
+        <line x1="445" y1="350" x2="445" y2="450" stroke="#E8A93C" strokeWidth="6" opacity="0.15" />
       </g>
 
-      {/* Ripples */}
-      <g stroke="#a0d8e8" strokeWidth="0.6" fill="none" opacity="0.5">
-        <path d="M 100 380 Q 130 376 160 380 T 220 380" />
-        <path d="M 300 410 Q 330 406 360 410 T 420 410" />
-        <path d="M 520 390 Q 550 386 580 390 T 640 390" />
+      {/* Ripples on fresh side */}
+      <g stroke="#a0d8e8" strokeWidth="1" fill="none" opacity="0.6">
+        <path d="M 100 410 Q 130 405 160 410 T 220 410" />
+        <path d="M 180 430 Q 210 425 240 430 T 300 430" />
+        <path d="M 320 420 Q 350 415 380 420 T 410 420" />
       </g>
 
-      {/* Title corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#3DA9C9" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3">
-          BALKHASH · ILE RIVER
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700">
-          50% · 50%
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          FRESH / SALT
-        </text>
+      {/* Ripples on salt side (less, more crusty) */}
+      <g stroke="#e8e0c8" strokeWidth="0.8" fill="none" opacity="0.4" strokeDasharray="2 2">
+        <path d="M 500 410 Q 530 405 560 410 T 620 410" />
+        <path d="M 600 430 Q 630 425 660 430 T 720 430" />
       </g>
+
+      {/* Reflection on water */}
+      <path d="M 0 360 L 200 380 L 400 370 L 600 380 L 800 365 L 800 460 L 0 460 Z" fill="#0a1428" opacity="0.4" />
     </svg>
   );
 }
 
 // ============================================================
-// 3. ALMATY SMOG — горы за смогом с городом
+// 3. ALMATY SMOG — горы за смогом, город, ТЭЦ
 // ============================================================
-function AlmatyCover({ variant }: SubProps) {
+function AlmatyCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="al-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#1a1820" />
@@ -207,93 +203,78 @@ function AlmatyCover({ variant }: SubProps) {
       <rect width="800" height="500" fill="url(#al-sky)" />
 
       {/* Sun in smog */}
-      <circle cx="600" cy="180" r="35" fill="#ffaa55" opacity="0.7" />
+      <circle cx="600" cy="200" r="40" fill="#ffaa55" opacity="0.7" />
 
-      {/* Distant mountains (Iile-Alatau) — фоном, едва видны через смог */}
-      <path d="M 0 220 L 100 140 L 180 180 L 280 100 L 400 160 L 520 110 L 640 170 L 760 130 L 800 150 L 800 320 L 0 320 Z" fill="#252030" opacity="0.7" />
-      {/* Snow */}
-      <path d="M 260 115 L 280 100 L 300 115 Z M 500 125 L 520 110 L 540 125 Z M 740 145 L 760 130 L 780 145 Z" fill="#e0d8e0" opacity="0.5" />
+      {/* Mountains (Iile-Alatau) — большие, по центру */}
+      <path d="M 0 250 L 100 170 L 180 210 L 280 130 L 400 190 L 520 140 L 640 200 L 760 160 L 800 180 L 800 350 L 0 350 Z" fill="#252030" opacity="0.8" />
+      {/* Snow caps */}
+      <path d="M 260 145 L 280 130 L 300 145 Z M 500 155 L 520 140 L 540 155 Z M 740 175 L 760 160 L 780 175 Z M 80 185 L 100 170 L 120 185 Z" fill="#e0d8e0" opacity="0.7" />
 
       {/* Smog layer (inversion) */}
-      <rect x="0" y="180" width="800" height="180" fill="url(#al-smog)" />
+      <rect x="0" y="200" width="800" height="200" fill="url(#al-smog)" />
 
-      {/* City silhouette */}
+      {/* City silhouette — central */}
       <g fill="#1a1620">
-        <rect x="50" y="320" width="40" height="80" />
-        <rect x="100" y="290" width="50" height="110" />
-        <rect x="160" y="310" width="35" height="90" />
-        <rect x="205" y="270" width="55" height="130" />
-        <rect x="270" y="295" width="40" height="105" />
-        <rect x="320" y="280" width="60" height="120" />
-        <rect x="390" y="305" width="45" height="95" />
-        <rect x="445" y="265" width="55" height="135" />
-        <rect x="510" y="290" width="40" height="110" />
-        <rect x="560" y="310" width="50" height="90" />
-        <rect x="620" y="285" width="55" height="115" />
-        <rect x="685" y="300" width="40" height="100" />
-        <rect x="735" y="315" width="50" height="85" />
+        <rect x="80" y="350" width="40" height="80" />
+        <rect x="130" y="320" width="50" height="110" />
+        <rect x="190" y="340" width="35" height="90" />
+        <rect x="235" y="300" width="55" height="130" />
+        <rect x="300" y="325" width="40" height="105" />
+        <rect x="350" y="310" width="60" height="120" />
+        <rect x="420" y="335" width="45" height="95" />
+        <rect x="475" y="295" width="55" height="135" />
+        <rect x="540" y="320" width="40" height="110" />
+        <rect x="590" y="340" width="50" height="90" />
+        <rect x="650" y="315" width="55" height="115" />
       </g>
 
       {/* Window lights */}
-      <g fill="#ffd27a" opacity="0.7">
-        <rect x="60" y="335" width="3" height="3" />
-        <rect x="75" y="350" width="3" height="3" />
-        <rect x="115" y="305" width="3" height="3" />
-        <rect x="125" y="325" width="3" height="3" />
-        <rect x="220" y="285" width="3" height="3" />
-        <rect x="240" y="305" width="3" height="3" />
-        <rect x="335" y="295" width="3" height="3" />
-        <rect x="365" y="320" width="3" height="3" />
-        <rect x="465" y="280" width="3" height="3" />
-        <rect x="485" y="305" width="3" height="3" />
-        <rect x="640" y="300" width="3" height="3" />
-        <rect x="700" y="315" width="3" height="3" />
+      <g fill="#ffd27a" opacity="0.85">
+        <rect x="90" y="365" width="3" height="3" />
+        <rect x="105" y="380" width="3" height="3" />
+        <rect x="145" y="335" width="3" height="3" />
+        <rect x="155" y="355" width="3" height="3" />
+        <rect x="250" y="315" width="3" height="3" />
+        <rect x="270" y="335" width="3" height="3" />
+        <rect x="365" y="325" width="3" height="3" />
+        <rect x="395" y="350" width="3" height="3" />
+        <rect x="495" y="310" width="3" height="3" />
+        <rect x="515" y="335" width="3" height="3" />
+        <rect x="670" y="330" width="3" height="3" />
       </g>
 
-      {/* CHP smoke stacks */}
+      {/* CHP smoke stacks — на правой стороне */}
       <g>
-        <rect x="700" y="240" width="6" height="80" fill="#1a1620" />
-        <rect x="715" y="220" width="6" height="100" fill="#1a1620" />
-        <rect x="730" y="235" width="6" height="85" fill="#1a1620" />
-        {/* Smoke */}
-        <ellipse cx="703" cy="225" rx="20" ry="15" fill="#5a4838" opacity="0.5" />
-        <ellipse cx="718" cy="200" rx="25" ry="18" fill="#5a4838" opacity="0.4" />
-        <ellipse cx="733" cy="215" rx="22" ry="16" fill="#5a4838" opacity="0.5" />
+        <rect x="730" y="270" width="6" height="80" fill="#1a1620" />
+        <rect x="745" y="250" width="6" height="100" fill="#1a1620" />
+        <rect x="760" y="265" width="6" height="85" fill="#1a1620" />
+        {/* Smoke clouds rising */}
+        <ellipse cx="733" cy="255" rx="20" ry="15" fill="#5a4838" opacity="0.6" />
+        <ellipse cx="748" cy="230" rx="25" ry="18" fill="#5a4838" opacity="0.5" />
+        <ellipse cx="763" cy="245" rx="22" ry="16" fill="#5a4838" opacity="0.55" />
+        <ellipse cx="745" cy="200" rx="35" ry="22" fill="#5a4838" opacity="0.4" />
       </g>
 
       {/* Ground */}
-      <rect x="0" y="400" width="800" height="100" fill="#1a1620" />
-
-      {/* Title corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#E07A3B" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3">
-          ALMATY · WINTER
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700">
-          PM2.5 ×12
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          ABOVE WHO LIMIT
-        </text>
-      </g>
+      <rect x="0" y="430" width="800" height="100" fill="#1a1620" />
     </svg>
   );
 }
 
 // ============================================================
-// 4. SEMEY — атомный гриб над степью
+// 4. SEMEY — атомный гриб
 // ============================================================
-function SemeyCover({ variant }: SubProps) {
+function SemeyCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sm-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0a0a18" />
           <stop offset="50%" stopColor="#2a1530" />
           <stop offset="100%" stopColor="#5a2530" />
         </linearGradient>
-        <radialGradient id="sm-flash" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stopColor="#fff8c0" stopOpacity="0.9" />
+        <radialGradient id="sm-flash" cx="0.5" cy="0.55" r="0.5">
+          <stop offset="0%" stopColor="#fff8c0" stopOpacity="0.95" />
           <stop offset="40%" stopColor="#ffaa55" stopOpacity="0.6" />
           <stop offset="100%" stopColor="#ff5520" stopOpacity="0" />
         </radialGradient>
@@ -301,71 +282,63 @@ function SemeyCover({ variant }: SubProps) {
 
       <rect width="800" height="500" fill="url(#sm-sky)" />
 
-      {/* Distant flash */}
-      <circle cx="400" cy="220" r="200" fill="url(#sm-flash)" />
+      {/* Distant flash glow */}
+      <circle cx="400" cy="280" r="280" fill="url(#sm-flash)" />
 
-      {/* Mushroom cloud */}
-      <g transform="translate(400, 220)">
-        {/* Cap */}
-        <ellipse cx="0" cy="-80" rx="120" ry="50" fill="#5a3540" opacity="0.85" />
-        <ellipse cx="0" cy="-90" rx="100" ry="40" fill="#7a4550" opacity="0.7" />
-        <ellipse cx="0" cy="-100" rx="80" ry="32" fill="#a05560" opacity="0.6" />
-        <ellipse cx="0" cy="-105" rx="55" ry="22" fill="#c47080" opacity="0.5" />
+      {/* Mushroom cloud — переместил ниже к центру */}
+      <g transform="translate(400, 290)">
+        {/* Cap (top mushroom head) */}
+        <ellipse cx="0" cy="-100" rx="160" ry="60" fill="#5a3540" opacity="0.9" />
+        <ellipse cx="0" cy="-115" rx="135" ry="48" fill="#7a4550" opacity="0.75" />
+        <ellipse cx="0" cy="-130" rx="105" ry="38" fill="#a05560" opacity="0.65" />
+        <ellipse cx="0" cy="-140" rx="75" ry="28" fill="#c47080" opacity="0.55" />
+        <ellipse cx="0" cy="-148" rx="45" ry="18" fill="#e090a0" opacity="0.4" />
+
         {/* Stem */}
-        <path d="M -25 -60 Q -10 0 -15 80 L 15 80 Q 10 0 25 -60 Z" fill="#5a3540" opacity="0.85" />
-        <path d="M -18 -50 Q -8 0 -12 70 L 12 70 Q 8 0 18 -50 Z" fill="#7a4550" opacity="0.6" />
+        <path d="M -30 -75 Q -12 0 -18 100 L 18 100 Q 12 0 30 -75 Z" fill="#5a3540" opacity="0.9" />
+        <path d="M -22 -65 Q -10 0 -14 90 L 14 90 Q 10 0 22 -65 Z" fill="#7a4550" opacity="0.7" />
+        <path d="M -12 -50 Q -8 0 -10 80 L 10 80 Q 8 0 12 -50 Z" fill="#a05560" opacity="0.5" />
       </g>
 
       {/* Steppe ground */}
-      <path d="M 0 320 L 800 320 L 800 500 L 0 500 Z" fill="#2a1818" />
-      <path d="M 0 340 L 100 335 L 200 345 L 300 338 L 400 348 L 500 340 L 600 348 L 700 342 L 800 350 L 800 500 L 0 500 Z" fill="#3a2218" opacity="0.7" />
+      <path d="M 0 400 L 800 400 L 800 500 L 0 500 Z" fill="#2a1818" />
+      <path d="M 0 415 L 100 410 L 200 420 L 300 412 L 400 422 L 500 415 L 600 423 L 700 417 L 800 425 L 800 500 L 0 500 Z" fill="#3a2218" opacity="0.7" />
 
-      {/* Far village (silhouettes) */}
-      <g fill="#1a1010" opacity="0.8">
-        <rect x="100" y="305" width="20" height="15" />
-        <polygon points="100,305 110,295 120,305" />
-        <rect x="135" y="308" width="18" height="12" />
-        <polygon points="135,308 144,300 153,308" />
-        <rect x="180" y="306" width="22" height="14" />
-        <polygon points="180,306 191,296 202,306" />
-        {/* Right side */}
-        <rect x="640" y="307" width="20" height="13" />
-        <polygon points="640,307 650,298 660,307" />
-        <rect x="680" y="305" width="18" height="15" />
-        <polygon points="680,305 689,296 698,305" />
+      {/* Far village silhouettes */}
+      <g fill="#1a1010" opacity="0.85">
+        <rect x="80" y="385" width="20" height="15" />
+        <polygon points="80,385 90,375 100,385" />
+        <rect x="115" y="388" width="18" height="12" />
+        <polygon points="115,388 124,380 133,388" />
+        <rect x="160" y="386" width="22" height="14" />
+        <polygon points="160,386 171,376 182,386" />
+        <rect x="640" y="387" width="20" height="13" />
+        <polygon points="640,387 650,378 660,387" />
+        <rect x="680" y="385" width="18" height="15" />
+        <polygon points="680,385 689,376 698,385" />
+        <rect x="715" y="388" width="20" height="12" />
+        <polygon points="715,388 725,380 735,388" />
       </g>
 
-      {/* Radiation symbol overlay */}
-      <g transform="translate(700, 80)" opacity="0.5">
-        <circle cx="0" cy="0" r="25" fill="none" stroke="#ffaa55" strokeWidth="2" />
-        <circle cx="0" cy="0" r="6" fill="#ffaa55" />
-        <path d="M 0 -25 L -8 -8 L 8 -8 Z" fill="#ffaa55" />
-        <path d="M 22 12 L 7 4 L 11 18 Z" fill="#ffaa55" />
-        <path d="M -22 12 L -7 4 L -11 18 Z" fill="#ffaa55" />
-      </g>
-
-      {/* Title corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#C0463C" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3">
-          SEMEY · 1949–1989
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700">
-          456 TESTS
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          NUCLEAR LEGACY
-        </text>
+      {/* Ash particles falling */}
+      <g fill="#a06070" opacity="0.4">
+        <circle cx="300" cy="220" r="1.5" />
+        <circle cx="350" cy="180" r="1" />
+        <circle cx="450" cy="200" r="1.5" />
+        <circle cx="500" cy="240" r="1" />
+        <circle cx="250" cy="260" r="1" />
+        <circle cx="550" cy="280" r="1.5" />
       </g>
     </svg>
   );
 }
 
 // ============================================================
-// 5. CASPIAN — море с нефтяными платформами
+// 5. CASPIAN — море, луна, нефтяные платформы
 // ============================================================
-function CaspianCover({ variant }: SubProps) {
+function CaspianCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="cp-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0a1830" />
@@ -380,106 +353,97 @@ function CaspianCover({ variant }: SubProps) {
 
       <rect width="800" height="500" fill="url(#cp-sky)" />
 
-      {/* Moon */}
-      <circle cx="150" cy="120" r="30" fill="#e0e8f0" opacity="0.85" />
-      <circle cx="155" cy="115" r="28" fill="#f5f8fc" />
-      <circle cx="148" cy="118" r="3" fill="#c8d0d8" />
-      <circle cx="160" cy="125" r="2" fill="#c8d0d8" />
+      {/* Stars */}
+      <g fill="#ffffff" opacity="0.7">
+        <circle cx="100" cy="60" r="1" />
+        <circle cx="250" cy="40" r="0.8" />
+        <circle cx="450" cy="80" r="1" />
+        <circle cx="650" cy="50" r="0.8" />
+        <circle cx="350" cy="100" r="0.8" />
+        <circle cx="700" cy="90" r="1" />
+      </g>
 
-      {/* Sea */}
-      <rect x="0" y="260" width="800" height="240" fill="url(#cp-sea)" />
+      {/* Moon — переместил выше и левее, не на главный объект */}
+      <circle cx="120" cy="130" r="34" fill="#e0e8f0" opacity="0.9" />
+      <circle cx="125" cy="125" r="32" fill="#f5f8fc" />
+      <circle cx="118" cy="128" r="3" fill="#c8d0d8" />
+      <circle cx="130" cy="135" r="2" fill="#c8d0d8" />
+      <circle cx="115" cy="118" r="2.5" fill="#c8d0d8" />
+
+      {/* Sea — большой блок снизу */}
+      <rect x="0" y="280" width="800" height="220" fill="url(#cp-sea)" />
 
       {/* Moon reflection */}
       <g opacity="0.5">
-        <ellipse cx="155" cy="280" rx="3" ry="2" fill="#e0e8f0" />
-        <ellipse cx="155" cy="295" rx="6" ry="2" fill="#e0e8f0" />
-        <ellipse cx="155" cy="320" rx="10" ry="2" fill="#e0e8f0" />
-        <ellipse cx="155" cy="350" rx="14" ry="2" fill="#e0e8f0" />
-        <ellipse cx="155" cy="385" rx="18" ry="2" fill="#e0e8f0" />
+        <ellipse cx="125" cy="295" rx="3" ry="2" fill="#e0e8f0" />
+        <ellipse cx="125" cy="310" rx="6" ry="2" fill="#e0e8f0" />
+        <ellipse cx="125" cy="335" rx="10" ry="2" fill="#e0e8f0" />
+        <ellipse cx="125" cy="365" rx="14" ry="2" fill="#e0e8f0" />
+        <ellipse cx="125" cy="400" rx="18" ry="2" fill="#e0e8f0" />
       </g>
 
-      {/* Water level marks (showing falling level) */}
-      <g stroke="#E8A93C" strokeWidth="1" strokeDasharray="3 3" opacity="0.5">
-        <line x1="0" y1="240" x2="800" y2="240" />
-        <line x1="0" y1="220" x2="800" y2="220" />
-      </g>
-      <text x="20" y="218" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="9">
-        1995
-      </text>
-      <text x="20" y="238" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="9">
-        2010
-      </text>
-
-      {/* Oil platforms */}
+      {/* Oil platforms — central, large */}
       <g>
-        {/* Platform 1 */}
-        <g transform="translate(400, 240)">
-          {/* Legs */}
-          <line x1="-25" y1="0" x2="-30" y2="40" stroke="#3a3a40" strokeWidth="3" />
-          <line x1="25" y1="0" x2="30" y2="40" stroke="#3a3a40" strokeWidth="3" />
-          <line x1="-15" y1="0" x2="-18" y2="40" stroke="#2a2a30" strokeWidth="2" />
-          <line x1="15" y1="0" x2="18" y2="40" stroke="#2a2a30" strokeWidth="2" />
+        {/* Big platform — center */}
+        <g transform="translate(400, 280)">
+          <line x1="-32" y1="0" x2="-38" y2="50" stroke="#3a3a40" strokeWidth="3.5" />
+          <line x1="32" y1="0" x2="38" y2="50" stroke="#3a3a40" strokeWidth="3.5" />
+          <line x1="-18" y1="0" x2="-22" y2="50" stroke="#2a2a30" strokeWidth="2" />
+          <line x1="18" y1="0" x2="22" y2="50" stroke="#2a2a30" strokeWidth="2" />
+          {/* X-bracing */}
+          <line x1="-32" y1="20" x2="32" y2="20" stroke="#3a3a40" strokeWidth="1" />
+          <line x1="-32" y1="35" x2="32" y2="35" stroke="#3a3a40" strokeWidth="1" />
           {/* Deck */}
-          <rect x="-35" y="-10" width="70" height="10" fill="#5a5a60" />
-          {/* Tower */}
-          <polygon points="-5,-10 5,-10 8,-60 -8,-60" fill="#3a3a40" />
-          <line x1="0" y1="-60" x2="0" y2="-80" stroke="#5a5a60" strokeWidth="1" />
+          <rect x="-45" y="-12" width="90" height="12" fill="#5a5a60" />
+          {/* Crane / tower */}
+          <polygon points="-8,-12 8,-12 12,-80 -12,-80" fill="#3a3a40" />
+          <line x1="0" y1="-80" x2="0" y2="-110" stroke="#5a5a60" strokeWidth="1.5" />
           {/* Flame */}
-          <ellipse cx="0" cy="-80" rx="3" ry="6" fill="#ffaa55" opacity="0.8" />
+          <ellipse cx="0" cy="-110" rx="5" ry="10" fill="#ffaa55" opacity="0.9" />
+          <ellipse cx="0" cy="-115" rx="3" ry="6" fill="#ffe080" opacity="0.8" />
           {/* Lights */}
-          <circle cx="-20" cy="-5" r="1.5" fill="#ffd27a" />
-          <circle cx="20" cy="-5" r="1.5" fill="#ffd27a" />
+          <circle cx="-30" cy="-6" r="2" fill="#ffd27a" />
+          <circle cx="0" cy="-6" r="2" fill="#ffd27a" />
+          <circle cx="30" cy="-6" r="2" fill="#ffd27a" />
         </g>
 
-        {/* Platform 2 (smaller) */}
-        <g transform="translate(620, 280)">
-          <line x1="-15" y1="0" x2="-18" y2="30" stroke="#3a3a40" strokeWidth="2" />
-          <line x1="15" y1="0" x2="18" y2="30" stroke="#3a3a40" strokeWidth="2" />
-          <rect x="-22" y="-6" width="44" height="6" fill="#4a4a50" />
-          <polygon points="-3,-6 3,-6 5,-40 -5,-40" fill="#3a3a40" />
-          <ellipse cx="0" cy="-50" rx="2" ry="4" fill="#ffaa55" opacity="0.8" />
+        {/* Right smaller platform */}
+        <g transform="translate(620, 320)">
+          <line x1="-18" y1="0" x2="-22" y2="40" stroke="#3a3a40" strokeWidth="2.5" />
+          <line x1="18" y1="0" x2="22" y2="40" stroke="#3a3a40" strokeWidth="2.5" />
+          <rect x="-25" y="-8" width="50" height="8" fill="#4a4a50" />
+          <polygon points="-4,-8 4,-8 6,-50 -6,-50" fill="#3a3a40" />
+          <ellipse cx="0" cy="-58" rx="3" ry="6" fill="#ffaa55" opacity="0.85" />
+          <circle cx="-15" cy="-4" r="1.5" fill="#ffd27a" />
+          <circle cx="15" cy="-4" r="1.5" fill="#ffd27a" />
         </g>
       </g>
 
-      {/* Oil slick */}
-      <ellipse cx="430" cy="320" rx="80" ry="6" fill="#0a0008" opacity="0.6" />
-      <ellipse cx="450" cy="335" rx="60" ry="4" fill="#1a0510" opacity="0.5" />
+      {/* Oil slick on water */}
+      <ellipse cx="430" cy="380" rx="100" ry="8" fill="#0a0008" opacity="0.7" />
+      <ellipse cx="460" cy="395" rx="70" ry="5" fill="#1a0510" opacity="0.6" />
 
       {/* Seal silhouette */}
-      <g transform="translate(700, 340)" fill="#2a3540" opacity="0.7">
-        <ellipse cx="0" cy="0" rx="22" ry="6" />
-        <circle cx="-18" cy="-4" r="4" />
+      <g transform="translate(700, 410)" fill="#2a3540" opacity="0.8">
+        <ellipse cx="0" cy="0" rx="25" ry="7" />
+        <circle cx="-20" cy="-5" r="5" />
       </g>
 
       {/* Ripples */}
-      <g stroke="#1a4a68" strokeWidth="0.5" fill="none" opacity="0.6">
-        <path d="M 100 380 Q 130 378 160 380 T 220 380" />
-        <path d="M 300 410 Q 330 408 360 410 T 420 410" />
-        <path d="M 520 400 Q 550 398 580 400 T 640 400" />
-      </g>
-
-      {/* Title corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#3DA9C9" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3">
-          CASPIAN · 5 STATES
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700">
-          −2.3m
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          SEA LEVEL DROP
-        </text>
+      <g stroke="#1a4a68" strokeWidth="0.6" fill="none" opacity="0.6">
+        <path d="M 250 420 Q 280 418 310 420 T 370 420" />
+        <path d="M 540 410 Q 570 408 600 410 T 660 410" />
       </g>
     </svg>
   );
 }
 
 // ============================================================
-// 6. IRTYSH — река через 3 страны с границами
+// 6. IRTYSH — карта 3 стран и река через них
 // ============================================================
-function IrtyshCover({ variant }: SubProps) {
+function IrtyshCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="ir-sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0e1828" />
@@ -494,92 +458,84 @@ function IrtyshCover({ variant }: SubProps) {
 
       <rect width="800" height="500" fill="url(#ir-sky)" />
 
-      {/* Three country areas (top-down map style) */}
-      {/* China (top right corner) */}
-      <path d="M 600 0 L 800 0 L 800 200 L 580 200 L 600 0 Z" fill="#5a3030" opacity="0.4" />
-      <text x="690" y="100" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="14" letterSpacing="2" textAnchor="middle" opacity="0.85">
+      {/* Three country bands */}
+      <rect x="0" y="0" width="800" height="170" fill="#5a3030" opacity="0.35" />
+      <rect x="0" y="170" width="800" height="180" fill="#3a4a30" opacity="0.35" />
+      <rect x="0" y="350" width="800" height="150" fill="#30303a" opacity="0.35" />
+
+      {/* Country labels — большие, по центру областей */}
+      <text x="690" y="95" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" textAnchor="middle" opacity="0.9">
         ҚХР
       </text>
-      <text x="690" y="120" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" textAnchor="middle">
+      <text x="690" y="118" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11" textAnchor="middle">
         CHINA
       </text>
 
-      {/* Kazakhstan (middle) */}
-      <path d="M 0 200 L 800 200 L 800 350 L 0 350 Z" fill="#3a4a30" opacity="0.4" />
-      <text x="400" y="280" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="14" letterSpacing="2" textAnchor="middle" opacity="0.85">
+      <text x="120" y="270" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" opacity="0.9">
         ҚАЗАҚСТАН
       </text>
-      <text x="400" y="298" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" textAnchor="middle">
+      <text x="120" y="293" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11">
         KAZAKHSTAN
       </text>
 
-      {/* Russia (bottom) */}
-      <path d="M 0 350 L 800 350 L 800 500 L 0 500 Z" fill="#30303a" opacity="0.4" />
-      <text x="400" y="430" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="14" letterSpacing="2" textAnchor="middle" opacity="0.85">
+      <text x="120" y="430" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" opacity="0.9">
         РЕСЕЙ
       </text>
-      <text x="400" y="448" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" textAnchor="middle">
+      <text x="120" y="453" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11">
         RUSSIA
       </text>
 
       {/* Borders */}
-      <line x1="0" y1="200" x2="800" y2="200" stroke="#E8A93C" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
-      <line x1="0" y1="350" x2="800" y2="350" stroke="#E8A93C" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
-      <line x1="600" y1="0" x2="580" y2="200" stroke="#E8A93C" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
+      <line x1="0" y1="170" x2="800" y2="170" stroke="#E8A93C" strokeWidth="1.5" strokeDasharray="8 5" opacity="0.6" />
+      <line x1="0" y1="350" x2="800" y2="350" stroke="#E8A93C" strokeWidth="1.5" strokeDasharray="8 5" opacity="0.6" />
 
       {/* River — пересекает все 3 страны */}
       <path
-        d="M 720 30 Q 700 80 660 130 Q 600 180 540 220 Q 470 260 400 290 Q 330 320 250 360 Q 180 410 100 470"
+        d="M 740 30 Q 700 80 660 130 Q 600 200 540 230 Q 470 270 400 300 Q 330 330 250 380 Q 180 430 100 470"
         stroke="url(#ir-river)"
-        strokeWidth="14"
+        strokeWidth="16"
         fill="none"
         strokeLinecap="round"
       />
       <path
-        d="M 720 30 Q 700 80 660 130 Q 600 180 540 220 Q 470 260 400 290 Q 330 320 250 360 Q 180 410 100 470"
+        d="M 740 30 Q 700 80 660 130 Q 600 200 540 230 Q 470 270 400 300 Q 330 330 250 380 Q 180 430 100 470"
         stroke="#a0d8e8"
         strokeWidth="3"
         fill="none"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.5"
       />
 
       {/* Canal in China (water diversion) */}
-      <line x1="660" y1="130" x2="780" y2="80" stroke="#5a3030" strokeWidth="3" strokeDasharray="2 3" opacity="0.7" />
-      <text x="780" y="70" fill="#C0463C" fontFamily="ui-monospace, monospace" fontSize="8" textAnchor="end" opacity="0.8">
+      <line x1="660" y1="130" x2="780" y2="60" stroke="#C0463C" strokeWidth="3" strokeDasharray="3 4" opacity="0.85" />
+      <text x="780" y="48" fill="#C0463C" fontFamily="ui-monospace, monospace" fontSize="10" textAnchor="end" opacity="0.9" fontWeight="700">
         4 km³/yr → Karamay
       </text>
 
       {/* Cities (dots on river) */}
       <g>
-        <circle cx="540" cy="220" r="5" fill="#E8A93C" />
-        <text x="555" y="218" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="9">
+        <circle cx="540" cy="230" r="6" fill="#E8A93C" />
+        <circle cx="540" cy="230" r="10" fill="#E8A93C" opacity="0.3" />
+        <text x="558" y="227" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
           Өскемен
         </text>
-        <circle cx="400" cy="290" r="5" fill="#E8A93C" />
-        <text x="415" y="288" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="9">
+
+        <circle cx="400" cy="300" r="6" fill="#E8A93C" />
+        <circle cx="400" cy="300" r="10" fill="#E8A93C" opacity="0.3" />
+        <text x="418" y="297" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
           Семей
         </text>
-        <circle cx="250" cy="360" r="5" fill="#E8A93C" />
-        <text x="265" y="358" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="9">
+
+        <circle cx="250" cy="380" r="6" fill="#E8A93C" />
+        <circle cx="250" cy="380" r="10" fill="#E8A93C" opacity="0.3" />
+        <text x="268" y="377" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
           Павлодар
         </text>
-        <circle cx="100" cy="470" r="5" fill="#E8A93C" />
-        <text x="115" y="468" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="9">
-          Омбы
-        </text>
-      </g>
 
-      {/* Title corner */}
-      <g transform="translate(40, 40)">
-        <text x="0" y="20" fill="#3DA9C9" fontFamily="ui-monospace, monospace" fontSize="11" letterSpacing="3">
-          IRTYSH · 4248 km
-        </text>
-        <text x="0" y="50" fill="#F0EAD6" fontFamily="serif" fontSize="32" fontWeight="700">
-          3 STATES
-        </text>
-        <text x="0" y="68" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="9" letterSpacing="2">
-          1 RIVER · NO TREATY
+        <circle cx="100" cy="470" r="6" fill="#E8A93C" />
+        <circle cx="100" cy="470" r="10" fill="#E8A93C" opacity="0.3" />
+        <text x="118" y="467" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
+          Омбы
         </text>
       </g>
     </svg>
@@ -591,7 +547,7 @@ function IrtyshCover({ variant }: SubProps) {
 // ============================================================
 function FallbackCover() {
   return (
-    <svg viewBox="0 0 800 500" className="w-full h-full" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="fb-bg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#1a2540" />
@@ -607,7 +563,7 @@ function FallbackCover() {
   );
 }
 
-const COVERS: Record<CaseSlug, React.ComponentType<SubProps>> = {
+const COVERS: Record<CaseSlug, React.ComponentType> = {
   "case-aral-2025": AralCover,
   "case-balkhash-2025": BalkhashCover,
   "case-almaty-smog-2025": AlmatyCover,
