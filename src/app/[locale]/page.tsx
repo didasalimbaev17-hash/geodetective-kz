@@ -3,7 +3,7 @@ import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SafeImage } from "@/components/ui/safe-image";
+import { CaseCover } from "@/components/art/CaseCover";
 import { HeroBackground } from "@/components/landing/HeroBackground";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText } from "@/lib/utils";
@@ -205,12 +205,9 @@ export default async function LandingPage({
             >
               <Card className="detective-card overflow-hidden h-full relative">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <SafeImage
-                    src={s.coverImage ?? ""}
-                    alt={getLocalizedText(s.title, locale)}
-                    fallbackLabel={getLocalizedText(s.title, locale)}
-                    fallbackHue={(idx * 60) % 360}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                  <CaseCover
+                    slug={s.id}
+                    className="w-full h-full group-hover:scale-110 transition-transform duration-1000"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
 

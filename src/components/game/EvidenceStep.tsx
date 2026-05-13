@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import { SafeImage } from "@/components/ui/safe-image";
+import { SatelliteFrame } from "@/components/art/SatelliteCompare";
 import {
   LineChart,
   Line,
@@ -205,24 +206,22 @@ function EvidenceContent({
               <div className="text-xs font-mono text-muted-foreground mb-1">
                 {c.before.year}
               </div>
-              <SafeImage
-                src={c.before.image}
-                alt={`Before ${c.before.year}`}
-                fallbackLabel={String(c.before.year)}
-                fallbackHue={200}
-                className="w-full aspect-square rounded-lg border border-border"
+              <SatelliteFrame
+                year={c.before.year}
+                theme="lake-shrinking"
+                state="before"
+                className="w-full aspect-square border border-border"
               />
             </div>
             <div>
               <div className="text-xs font-mono text-muted-foreground mb-1">
                 {c.after.year}
               </div>
-              <SafeImage
-                src={c.after.image}
-                alt={`After ${c.after.year}`}
-                fallbackLabel={String(c.after.year)}
-                fallbackHue={30}
-                className="w-full aspect-square rounded-lg border border-border"
+              <SatelliteFrame
+                year={c.after.year}
+                theme="lake-shrinking"
+                state="after"
+                className="w-full aspect-square border border-border"
               />
             </div>
           </div>
