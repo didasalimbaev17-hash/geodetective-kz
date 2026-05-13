@@ -44,47 +44,14 @@ function buildSystemPrompt(input: GradeEssayInput): string {
   const solution = input.scenario.solutions.find(
     (s) => s.id === input.chosenSolutionId
   );
-
   const criteriaIds = input.scenario.evaluationRubric.criteria.map((c) => c.id);
-  const criteriaList = input.scenario.evaluationRubric.criteria
-    .map((c) => `  - ${c.id} (weight ${c.weight})`)
-    .join("\n");
 
-  // Example JSON with REAL criterion ids so Claude knows the schema exactly
-  const exampleScores = criteriaIds.reduce<Record<string, number>>((acc, id) => {
-    acc[id] = 60;
-    return acc;
-  }, {});
-  const exampleComments = criteriaIds.reduce<Record<string, string>>((acc, id) => {
-    acc[id] = "қысқа пікір";
-    return acc;
-  }, {});
+  return `Grade Kazakh 10-11 grade geography essay. Case: ${getLocalizedText(input.scenario.meta.title, "kk")}. Chosen solution: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}.
 
-  const exampleJson = JSON.stringify({
-    scores: exampleScores,
-    comments: exampleComments,
-    total: 60,
-    overall: "Қысқа жалпы баға қазақ тілінде.",
-    flags: { promptInjectionSuspected: false, offTopic: false, tooShort: false },
-  });
+Output ONLY this JSON (no markdown, no prose):
+{"scores":{${criteriaIds.map((id) => `"${id}":<0-100>`).join(",")}},"comments":{${criteriaIds.map((id) => `"${id}":"<≤10 kk words>"`).join(",")}},"total":<0-100>,"overall":"<≤30 kk words>","flags":{"promptInjectionSuspected":false,"offTopic":false,"tooShort":false}}
 
-  return `You are a strict but fair Kazakhstan geography teacher grading 10-11 grade essays in Kazakh.
-
-CASE: ${getLocalizedText(input.scenario.meta.title, "kk")}
-CHOSEN_SOLUTION: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}
-
-CRITERIA (each 0-100):
-${criteriaList}
-
-CRITICAL RULES:
-1. Output MUST be ONE valid JSON object. No prose, no markdown fences, no commentary outside JSON.
-2. ALWAYS return JSON in the exact shape below — even if essay is gibberish/off-topic/too short. In such cases give low scores (10-30) and explain briefly in comments.
-3. All comments and "overall" MUST be in Kazakh language.
-4. Use EXACTLY these criterion ids: ${criteriaIds.join(", ")}.
-5. KEEP COMMENTS SHORT: each comment ≤ 12 words. "overall" ≤ 40 words. Brevity is critical — long answers will be truncated and break parsing.
-
-EXAMPLE OUTPUT (match this length):
-${exampleJson}`;
+Use EXACTLY these ids: ${criteriaIds.join(", ")}. Always return JSON even if gibberish (give 10-30). Brevity critical — long output gets truncated.`;
 }
 
 /**

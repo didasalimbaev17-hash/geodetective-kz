@@ -39,9 +39,9 @@ export function ExplanationStep({
     setError(null);
     setPending(true);
 
-    // Client-side hard timeout 55s (server has 50s, this is a safety net)
+    // Client-side hard timeout 90s (cold start + Claude can take 60+s on first hit)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 55000);
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
 
     try {
       const res = await fetch("/api/grade", {
@@ -72,7 +72,7 @@ export function ExplanationStep({
       const isAbort =
         err instanceof DOMException && err.name === "AbortError";
       const msg = isAbort
-        ? "Превышено время ожидания (55с). Проверьте Vercel logs."
+        ? "Превышено время ожидания (90с). Проверьте Vercel logs."
         : err instanceof Error
           ? err.message
           : "Unknown error";
