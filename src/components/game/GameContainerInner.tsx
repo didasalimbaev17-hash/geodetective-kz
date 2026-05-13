@@ -18,56 +18,26 @@ import { Loader2 } from "lucide-react";
 
 const STORAGE_KEY_PREFIX = "geodet-case-";
 
-function readSnapshot(storageKey: string, scenario: Scenario): unknown {
-  try {
-    const raw = sessionStorage.getItem(storageKey);
-    if (!raw) return undefined;
-    const parsed = JSON.parse(raw);
-    if (!parsed?.value || parsed.value === "completed") return undefined;
-    if (Array.isArray(parsed.context?.evidenceViewed)) {
-      parsed.context.evidenceViewed = new Set(parsed.context.evidenceViewed);
-    }
-    parsed.context.scenario = scenario;
-    return parsed;
-  } catch {
-    return undefined;
-  }
-}
-
 export function GameContainerInner({ scenario }: { scenario: Scenario }) {
   const machine = useMemo(() => createCaseMachine(scenario), [scenario]);
   const storageKey = `${STORAGE_KEY_PREFIX}${scenario.id}`;
 
-  // Safe to read sessionStorage here — we're client-only via dynamic({ssr:false})
-  const initialSnapshot = useMemo(
-    () => readSnapshot(storageKey, scenario),
-    [storageKey, scenario]
-  );
-
-  const [state, send] = useMachine(machine, {
-    snapshot: initialSnapshot as never,
-  });
+  // Start fresh — no snapshot restore for now
+  // (XState v5 snapshot persistence had compatibility issues; revisit later)
+  const [state, send] = useMachine(machine);
   const t = useTranslations();
 
-  // Persist on every state change
+  // Save just the stage name for diagnostics (lightweight, no XState deps)
   useEffect(() => {
     try {
-      const snapshot = {
-        value: state.value,
-        context: {
-          ...state.context,
-          evidenceViewed: [...state.context.evidenceViewed],
-          scenario: undefined,
-        },
-      };
-      sessionStorage.setItem(storageKey, JSON.stringify(snapshot));
+      sessionStorage.setItem(`${storageKey}-stage`, String(state.value));
       if (state.value === "completed") {
-        sessionStorage.removeItem(storageKey);
+        sessionStorage.removeItem(`${storageKey}-stage`);
       }
     } catch {
-      // ignore quota errors
+      // ignore
     }
-  }, [state, storageKey]);
+  }, [state.value, storageKey]);
 
   const stage = state.value as string;
 
