@@ -38,6 +38,7 @@ export type CaseEvent =
       type: "RECEIVE_AI_GRADE";
       grade: NonNullable<CaseContext["aiEvaluation"]>;
     }
+  | { type: "GRADING_FAILED" }
   | { type: "FINISH" }
   | { type: "RESET" };
 
@@ -219,8 +220,12 @@ export const createCaseMachine = (scenario: Scenario) =>
       explanation: {
         on: {
           SUBMIT_EXPLANATION: {
-            target: "grading",
+            // remain in "explanation" state — UI shows loader; no need for separate grading state
             actions: "saveExplanation",
+          },
+          RECEIVE_AI_GRADE: {
+            target: "debrief",
+            actions: "saveAiGrade",
           },
         },
       },
@@ -229,6 +234,9 @@ export const createCaseMachine = (scenario: Scenario) =>
           RECEIVE_AI_GRADE: {
             target: "debrief",
             actions: "saveAiGrade",
+          },
+          GRADING_FAILED: {
+            target: "explanation",
           },
         },
       },

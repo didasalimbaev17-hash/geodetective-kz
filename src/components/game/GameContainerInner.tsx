@@ -93,7 +93,11 @@ export function GameContainerInner({ scenario }: { scenario: Scenario }) {
           chosenSolutionId={state.context.chosenSolutionId}
           investigationAnswers={state.context.investigationAnswers}
           evidenceViewed={[...state.context.evidenceViewed]}
+          onSubmitText={(text) =>
+            send({ type: "SUBMIT_EXPLANATION", text })
+          }
           onGraded={(grade) => send({ type: "RECEIVE_AI_GRADE", grade })}
+          onGradingFailed={() => send({ type: "GRADING_FAILED" })}
         />
       )}
 

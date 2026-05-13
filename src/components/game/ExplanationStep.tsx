@@ -16,13 +16,17 @@ export function ExplanationStep({
   chosenSolutionId,
   investigationAnswers,
   evidenceViewed,
+  onSubmitText,
   onGraded,
+  onGradingFailed,
 }: {
   scenario: Scenario;
   chosenSolutionId: string;
   investigationAnswers: Record<string, number | number[]>;
   evidenceViewed: string[];
+  onSubmitText: (text: string) => void;
   onGraded: (grade: AiGradingResponse) => void;
+  onGradingFailed: () => void;
 }) {
   const t = useTranslations("game.explanation");
   const locale = useLocale();
@@ -39,7 +43,11 @@ export function ExplanationStep({
     setError(null);
     setPending(true);
 
-    // Client-side hard timeout 90s (cold start + Claude can take 60+s on first hit)
+    // CRITICAL: send SUBMIT_EXPLANATION FIRST to transition to "grading" state.
+    // Otherwise RECEIVE_AI_GRADE arrives in "explanation" state and is silently ignored.
+    onSubmitText(text);
+
+    // Client-side hard timeout 90s
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 90000);
 
@@ -83,6 +91,7 @@ export function ExplanationStep({
           : `Қате: ${msg}. Қайта көріңіз.`
       );
       setPending(false);
+      onGradingFailed(); // вернуть state machine из "grading" обратно в "explanation"
     }
   }
 
