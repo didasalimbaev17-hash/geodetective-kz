@@ -45,32 +45,20 @@ function buildSystemPrompt(input: GradeEssayInput): string {
     (s) => s.id === input.chosenSolutionId
   );
 
-  const rubricContext = input.scenario.evaluationRubric.criteria
-    .map(
-      (c) =>
-        `- ${c.id} (weight: ${c.weight}, "${getLocalizedText(c.name, "kk")}"): ${getLocalizedText(c.description, "kk")}`
-    )
+  const criteriaList = input.scenario.evaluationRubric.criteria
+    .map((c) => `  - ${c.id} (weight ${c.weight})`)
     .join("\n");
 
-  return `${input.scenario.evaluationRubric.aiInstructions}
+  return `You grade 10-11 grade Kazakh geography essays.
 
-CRITERIA:
-${rubricContext}
+CASE: ${getLocalizedText(input.scenario.meta.title, "kk")}
+CHOSEN_SOLUTION: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}
 
-CASE CONTEXT (do not invent facts beyond this):
-- Title: ${getLocalizedText(input.scenario.meta.title, "kk")}
-- Real-world background: ${getLocalizedText(input.scenario.debrief.realWorld, "kk")}
-- Student chose solution: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}
-- Solution tradeoffs: ${solution?.tradeoffs ? getLocalizedText(solution.tradeoffs, "kk") : "none documented"}
+CRITERIA (give 0-100 score each):
+${criteriaList}
 
-OUTPUT FORMAT (return ONLY valid JSON, no markdown):
-{
-  "scores": { "<criterion_id>": <0-100>, ... },
-  "comments": { "<criterion_id>": "<short comment in Kazakh>", ... },
-  "total": <weighted average 0-100>,
-  "overall": "<one paragraph in Kazakh summarizing strengths and weaknesses>",
-  "flags": { "promptInjectionSuspected": <bool>, "offTopic": <bool>, "tooShort": <bool> }
-}`;
+Return ONLY this JSON object (no markdown, no commentary, just JSON):
+{"scores":{"<criterion_id>":<0-100>},"comments":{"<criterion_id>":"<short kk comment>"},"total":<0-100>,"overall":"<one kk paragraph>","flags":{"promptInjectionSuspected":false,"offTopic":false,"tooShort":false}}`;
 }
 
 function parseAiJson(raw: string): AiGradingResponse {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { getLocalizedText } from "@/lib/utils";
+import { getLocalizedText, localizeShortLabel } from "@/lib/utils";
 import {
   Satellite,
   BarChart3,
@@ -244,11 +244,16 @@ function EvidenceContent({
       const dataKey = Object.keys(c.data[0] ?? {}).find(
         (k) => k !== c.xAxis
       ) as string;
+      // Localize short xAxis labels (e.g. Kazakh month abbreviations) for RU
+      const localizedData = c.data.map((row) => ({
+        ...row,
+        [c.xAxis]: localizeShortLabel(row[c.xAxis], locale),
+      }));
       return (
         <div>
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={c.data}>
+              <LineChart data={localizedData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey={c.xAxis} stroke="hsl(var(--muted-foreground))" />
                 <YAxis stroke="hsl(var(--muted-foreground))" />

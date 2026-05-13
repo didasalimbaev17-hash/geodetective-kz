@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useMachine } from "@xstate/react";
 import { useTranslations } from "next-intl";
 import type { Scenario } from "@/schemas/case.schema";
@@ -18,72 +18,71 @@ import { Loader2 } from "lucide-react";
 
 const STORAGE_KEY_PREFIX = "geodet-case-";
 
+/**
+ * Читаем snapshot из sessionStorage СИНХРОННО — до создания XState machine.
+ * Иначе useMachine создаст initial state раньше чем приедет useEffect.
+ */
+function readInitialSnapshot(storageKey: string, scenario: Scenario): unknown {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = sessionStorage.getItem(storageKey);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.value || parsed.value === "completed") return undefined;
+
+    // Convert array back to Set (sessionStorage flattened it)
+    if (Array.isArray(parsed.context?.evidenceViewed)) {
+      parsed.context.evidenceViewed = new Set(parsed.context.evidenceViewed);
+    }
+    // Re-attach scenario object (was stripped before save)
+    parsed.context.scenario = scenario;
+    return parsed;
+  } catch {
+    return undefined;
+  }
+}
+
 export function GameContainer({ scenario }: { scenario: Scenario }) {
   const machine = useMemo(() => createCaseMachine(scenario), [scenario]);
   const storageKey = `${STORAGE_KEY_PREFIX}${scenario.id}`;
 
-  // Load persisted state from sessionStorage
-  const [initialSnapshot, setInitialSnapshot] = useState<unknown>(undefined);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = sessionStorage.getItem(storageKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.value && parsed.value !== "completed") {
-          // Restore Set from array (sessionStorage flattened it)
-          if (parsed.context?.evidenceViewed && Array.isArray(parsed.context.evidenceViewed)) {
-            parsed.context.evidenceViewed = new Set(parsed.context.evidenceViewed);
-          }
-          parsed.context.scenario = scenario;
-          setInitialSnapshot(parsed);
-        }
-      }
-    } catch {
-      // ignore
-    }
-    setHydrated(true);
-  }, [storageKey, scenario]);
+  // Sync read of session snapshot
+  const initialSnapshot = useMemo(
+    () => readInitialSnapshot(storageKey, scenario),
+    [storageKey, scenario]
+  );
 
   const [state, send] = useMachine(machine, {
-    snapshot: hydrated ? (initialSnapshot as never) : undefined,
+    snapshot: initialSnapshot as never,
   });
   const t = useTranslations();
 
+  // Track whether we've done the first save (to avoid overwriting on first render)
+  const firstSaveDone = useRef(false);
+
   // Persist state on every change
   useEffect(() => {
-    if (!hydrated || typeof window === "undefined") return;
+    if (typeof window === "undefined") return;
     try {
       const snapshot = {
         value: state.value,
         context: {
           ...state.context,
-          // Convert Set → Array for JSON
           evidenceViewed: [...state.context.evidenceViewed],
-          // Don't save the full scenario object (too big, restored from props)
-          scenario: undefined,
+          scenario: undefined, // don't save (heavy + re-attached on load)
         },
       };
       sessionStorage.setItem(storageKey, JSON.stringify(snapshot));
       if (state.value === "completed") {
         sessionStorage.removeItem(storageKey);
       }
+      firstSaveDone.current = true;
     } catch {
-      // ignore (quota exceeded, etc.)
+      // ignore
     }
-  }, [state, storageKey, hydrated]);
+  }, [state, storageKey]);
 
   const stage = state.value as string;
-
-  if (!hydrated) {
-    return (
-      <div className="container py-20 text-center">
-        <Loader2 className="size-12 text-primary animate-spin mx-auto" />
-      </div>
-    );
-  }
 
   return (
     <div className="container py-6 md:py-10">
@@ -137,9 +136,7 @@ export function GameContainer({ scenario }: { scenario: Scenario }) {
           chosenSolutionId={state.context.chosenSolutionId}
           investigationAnswers={state.context.investigationAnswers}
           evidenceViewed={[...state.context.evidenceViewed]}
-          onGraded={(grade) =>
-            send({ type: "RECEIVE_AI_GRADE", grade })
-          }
+          onGraded={(grade) => send({ type: "RECEIVE_AI_GRADE", grade })}
         />
       )}
 
@@ -147,7 +144,9 @@ export function GameContainer({ scenario }: { scenario: Scenario }) {
         <Card className="max-w-md mx-auto">
           <CardContent className="p-12 text-center">
             <Loader2 className="size-12 text-primary animate-spin mx-auto mb-4" />
-            <p className="text-lg">{t("game.explanation.gradingInProgress")}</p>
+            <p className="text-lg">
+              {t("game.explanation.gradingInProgress")}
+            </p>
           </CardContent>
         </Card>
       )}

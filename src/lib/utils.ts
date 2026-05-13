@@ -47,3 +47,36 @@ export function generateClassroomCode(): string {
   }
   return result;
 }
+
+// Локализация коротких казахских меток (месяцы, регионы и др.) в данных кейсов
+const KK_TO_RU_LABELS: Record<string, string> = {
+  // Months
+  "Қаң": "Янв",
+  "Ақп": "Фев",
+  "Нау": "Мар",
+  "Сәу": "Апр",
+  "Мам": "Май",
+  "Мау": "Июн",
+  "Шіл": "Июл",
+  "Там": "Авг",
+  "Қыр": "Сен",
+  "Қаз": "Окт",
+  "Қар": "Ноя",
+  "Жел": "Дек",
+  // Regions / cities
+  "Семей": "Семей",
+  "Қарағанды": "Караганда",
+  "Орт. ҚР": "Ср. РК",
+  "Әлем": "Мир",
+  "ҚР": "РК",
+  "ҚХР": "КНР",
+};
+
+/**
+ * Если значение — известная казахская короткая метка, возвращает русский вариант
+ * для русской локали. Иначе возвращает исходное значение.
+ */
+export function localizeShortLabel(value: unknown, locale: string): unknown {
+  if (locale !== "ru" || typeof value !== "string") return value;
+  return KK_TO_RU_LABELS[value] ?? value;
+}
