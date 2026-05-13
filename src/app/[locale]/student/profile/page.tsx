@@ -75,7 +75,9 @@ export default async function ProfilePage({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Бірінші кейсіңізді аяқтап белгі алыңыз.
+            {locale === "ru"
+              ? "Завершите первый кейс, чтобы получить бейдж."
+              : "Бірінші кейсіңізді аяқтап белгі алыңыз."}
           </p>
         </CardContent>
       </Card>

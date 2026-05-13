@@ -17,8 +17,7 @@ export const aralScenario: Scenario = {
     difficulty: 2,
     estimatedMinutes: 20,
     tags: ["экология", "су_ресурстары", "Қазақстан", "10_сынып"],
-    coverImage:
-      "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1280&q=80",
+    coverImage: "https://picsum.photos/seed/aral-sea/1280/720",
   },
 
   region: {
@@ -37,8 +36,7 @@ export const aralScenario: Scenario = {
       kk: "Сізге Орталық Азиядағы экологиялық апатты зерттеу тапсырылды. 1960 жылы бұл аймақта әлемдегі төртінші ірі көл болған — ауданы 68 000 шаршы шақырым. Бүгін — тек шөл мен қаңқа кемелер қалды. Не болды? Себебін табыңыз.",
       ru: "Вам поручено расследовать экологическую катастрофу в Центральной Азии. В 1960 году здесь было четвёртое по величине озеро мира — площадь 68 000 км². Сегодня — только пустыня и скелеты кораблей. Что случилось? Найдите причину.",
     },
-    backgroundImage:
-      "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1920&q=80",
+    backgroundImage: "https://picsum.photos/seed/aral-desert/1920/720",
   },
 
   evidence: [
@@ -53,13 +51,11 @@ export const aralScenario: Scenario = {
       required: true,
       content: {
         before: {
-          image:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Aral_Sea_1989-2014.jpg/1280px-Aral_Sea_1989-2014.jpg",
+          image: "https://picsum.photos/seed/aral1989/640/640",
           year: 1989,
         },
         after: {
-          image:
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/AralSea1989_2008.jpg/1280px-AralSea1989_2008.jpg",
+          image: "https://picsum.photos/seed/aral2014desert/640/640",
           year: 2014,
         },
         annotation: {
@@ -168,7 +164,7 @@ export const aralScenario: Scenario = {
       content: {
         images: [
           {
-            src: "https://images.unsplash.com/photo-1582551593089-4906c3e4b6e3?w=1280&q=80",
+            src: "https://picsum.photos/seed/aral-rusty-ship/1280/720",
             caption: {
               kk: "Мойнақ маңындағы тат басқан кеме. Бұрынғы порт — қазір 200 км құрғақ жер.",
               ru: "Ржавый корабль возле Муйнака. Бывший порт — теперь 200 км сухой земли.",

@@ -105,7 +105,7 @@ function QuestionCard({
           </div>
           {isMulti && (
             <Badge variant="outline" className="text-xs">
-              Бірнеше
+              {locale === "ru" ? "Несколько" : "Бірнеше"}
             </Badge>
           )}
         </div>

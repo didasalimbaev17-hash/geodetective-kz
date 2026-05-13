@@ -12,7 +12,7 @@ export const semeyScenario: Scenario = {
     estimatedMinutes: 25,
     tags: ["радиация", "ВКО", "денсаулық", "тарих"],
     coverImage:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&q=80",
+      "https://picsum.photos/seed/semey-steppe/1280/720",
   },
 
   region: { center: { lat: 50.42, lng: 78.0 }, zoom: 7, basemap: "dark" },

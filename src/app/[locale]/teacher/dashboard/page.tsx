@@ -79,7 +79,7 @@ export default async function TeacherDashboard({
         <CardContent>
           <div className="text-center py-12 text-muted-foreground">
             <BookOpen className="size-12 mx-auto mb-3 opacity-30" />
-            <p className="mb-4">Сізде әлі сыныптар жоқ</p>
+            <p className="mb-4">{locale === "ru" ? "У вас ещё нет классов" : "Сізде әлі сыныптар жоқ"}</p>
             <Button variant="outline" className="gap-2">
               <Plus className="size-4" />
               {t("teacher.createClass")}
@@ -91,29 +91,32 @@ export default async function TeacherDashboard({
       <div className="mt-8 grid md:grid-cols-2 gap-4">
         <Card className="detective-card">
           <CardHeader>
-            <CardTitle className="text-lg">Кейстер каталогы</CardTitle>
+            <CardTitle className="text-lg">{locale === "ru" ? "Каталог кейсов" : "Кейстер каталогы"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Барлық қолжетімді кейстерді қараңыз және сыныпқа тағайындаңыз.
+              {locale === "ru"
+                ? "Просмотрите все доступные кейсы и назначьте классу."
+                : "Барлық қолжетімді кейстерді қараңыз және сыныпқа тағайындаңыз."}
             </p>
             <Button asChild variant="outline" className="w-full">
-              <Link href="/student/dashboard">Кейстерді көру</Link>
+              <Link href="/student/dashboard">{locale === "ru" ? "Посмотреть кейсы" : "Кейстерді көру"}</Link>
             </Button>
           </CardContent>
         </Card>
         <Card className="detective-card">
           <CardHeader>
-            <CardTitle className="text-lg">Жаңа кейс</CardTitle>
+            <CardTitle className="text-lg">{locale === "ru" ? "Новый кейс" : "Жаңа кейс"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Өз кейсіңізді конструктор арқылы жасаңыз. Жақында қолжетімді
-              болады.
+              {locale === "ru"
+                ? "Создайте свой кейс через конструктор. Будет доступно скоро."
+                : "Өз кейсіңізді конструктор арқылы жасаңыз. Жақында қолжетімді болады."}
             </p>
             <Button variant="outline" className="w-full" disabled>
               <Badge variant="outline" className="text-xs">
-                Жақында
+                {locale === "ru" ? "Скоро" : "Жақында"}
               </Badge>
             </Button>
           </CardContent>

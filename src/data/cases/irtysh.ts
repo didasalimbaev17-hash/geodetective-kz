@@ -15,7 +15,7 @@ export const irtyshScenario: Scenario = {
     estimatedMinutes: 20,
     tags: ["өзен", "трансшекаралық", "ластану", "ҚХР"],
     coverImage:
-      "https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?w=1280&q=80",
+      "https://picsum.photos/seed/irtysh-river/1280/720",
   },
 
   region: { center: { lat: 51.5, lng: 78.0 }, zoom: 5, basemap: "dark" },

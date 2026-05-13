@@ -137,7 +137,7 @@ export default async function LandingPage({
       <section className="container py-24 relative">
         <div className="text-center mb-16">
           <Badge variant="outline" className="mb-4 font-mono text-xs">
-            01 — Процесс
+            {locale === "ru" ? "01 — Процесс" : "01 — Үрдіс"}
           </Badge>
           <h2 className="font-display text-4xl md:text-6xl font-bold text-balance">
             <span className="gradient-text">{t("landing.features.title")}</span>
@@ -183,7 +183,7 @@ export default async function LandingPage({
       <section className="container py-24 border-t border-border/40 relative">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <Badge variant="outline" className="mb-4 font-mono text-xs">
-            02 — Дела
+            {locale === "ru" ? "02 — Дела" : "02 — Істер"}
           </Badge>
           <h2 className="font-display text-4xl md:text-6xl font-bold mb-4 text-balance">
             <span className="gradient-text">
@@ -277,7 +277,7 @@ export default async function LandingPage({
                 />
               </div>
               <Badge variant="outline" className="mb-3 font-mono text-xs">
-                03 — Кабинет учителя
+                {locale === "ru" ? "03 — Кабинет учителя" : "03 — Мұғалім кабинеті"}
               </Badge>
               <h2 className="font-display text-4xl md:text-5xl font-bold mb-5 text-balance">
                 {t("landing.forTeachers.title")}

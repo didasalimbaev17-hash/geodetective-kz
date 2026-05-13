@@ -64,8 +64,8 @@ export function ExplanationStep({
       <Card className="detective-card">
         <CardContent className="p-6">
           <div className="mb-4 p-4 bg-secondary/10 border-l-2 border-secondary rounded">
-            <div className="text-xs font-mono uppercase text-secondary mb-1">
-              Тапсырма
+            <div className="text-xs font-mono uppercase text-secondary mb-1 tracking-wider">
+              {locale === "ru" ? "Задание" : "Тапсырма"}
             </div>
             <p className="font-serif text-base">
               {getLocalizedText(scenario.explanationTask.prompt, locale)}
