@@ -76,15 +76,8 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
 
     if (error) return { ok: false, error: error.message };
 
-    if (data.user) {
-      await supabase.from("profiles").upsert({
-        id: data.user.id,
-        email,
-        full_name: fullName,
-        role,
-        locale: "kk",
-      });
-    }
+    // Profile is created automatically by the DB trigger `handle_new_user`
+    // using raw_user_meta_data (full_name, role, locale).
 
     if (!data.session) {
       return { ok: true, needsEmailConfirm: true };
