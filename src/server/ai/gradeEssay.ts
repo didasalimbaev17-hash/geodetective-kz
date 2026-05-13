@@ -92,9 +92,15 @@ async function gradeWithClaude(
   injection: boolean
 ): Promise<AiGradingResponse> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-  // Default to Haiku 4.5 — much faster (3-5s) than Sonnet (15-20s) which times out on Vercel Hobby.
-  // Override with ANTHROPIC_GRADING_MODEL env var if you want Sonnet quality.
-  const model = process.env.ANTHROPIC_GRADING_MODEL ?? "claude-haiku-4-5";
+  // Force Haiku 4.5 by default — fast (3-5s) and reliable on Vercel Hobby.
+  // If env var still says "sonnet", force Haiku because Sonnet timeouts on Hobby tier (60s limit).
+  let model = process.env.ANTHROPIC_GRADING_MODEL ?? "claude-haiku-4-5";
+  if (model.includes("sonnet")) {
+    console.warn(
+      `[gradeEssay] ${model} forced to claude-haiku-4-5 (Sonnet often timeouts on Vercel Hobby)`
+    );
+    model = "claude-haiku-4-5";
+  }
 
   const controller = new AbortController();
   const timeoutMs = Number(process.env.AI_TIMEOUT_MS ?? 35000);
@@ -204,71 +210,31 @@ export async function gradeEssay(
     (provider === "openai" && process.env.OPENAI_API_KEY) ||
     (provider === "openrouter" && process.env.OPENROUTER_API_KEY);
 
-  if (!hasKey) return mockGrade(input);
+  if (!hasKey) {
+    throw new Error(
+      `AI provider "${provider}" is not configured. Set the API key in environment variables.`
+    );
+  }
 
   const injection = detectPromptInjection(input.essayText);
 
-  try {
-    let validated: AiGradingResponse;
-    if (provider === "claude") {
-      validated = await gradeWithClaude(input, injection);
-    } else {
-      validated = await gradeWithOpenAI(input, injection, provider);
-    }
-
-    if (injection) {
-      return {
-        ...validated,
-        total: 0,
-        flags: {
-          promptInjectionSuspected: true,
-          offTopic: validated.flags?.offTopic ?? false,
-          tooShort: validated.flags?.tooShort ?? false,
-        },
-      };
-    }
-    return validated;
-  } catch (err) {
-    console.error(`[gradeEssay/${provider}] API failed:`, err);
-    return mockGrade(input);
-  }
-}
-
-function mockGrade(input: GradeEssayInput): AiGradingResponse {
-  const wordCount = input.essayText.trim().split(/\s+/).length;
-  const baseScore = Math.min(85, Math.max(40, wordCount / 2));
-
-  const scores: Record<string, number> = {};
-  const comments: Record<string, string> = {};
-
-  for (const c of input.scenario.evaluationRubric.criteria) {
-    const variance = Math.random() * 20 - 10;
-    scores[c.id] = Math.round(
-      Math.max(30, Math.min(95, baseScore + variance))
-    );
-    comments[c.id] =
-      "Жергілікті бағалау режимі. AI API кілті орнатылмаған.";
+  let validated: AiGradingResponse;
+  if (provider === "claude") {
+    validated = await gradeWithClaude(input, injection);
+  } else {
+    validated = await gradeWithOpenAI(input, injection, provider);
   }
 
-  const total = Math.round(
-    input.scenario.evaluationRubric.criteria.reduce(
-      (sum, c) => sum + (scores[c.id] * c.weight) / 100,
-      0
-    )
-  );
-
-  return {
-    scores,
-    comments,
-    total,
-    overall:
-      "Бұл — демо режимі. Шынайы бағалау үшін .env-ке AI API кілтін қосыңыз (Claude / OpenAI / OpenRouter). Сіздің эссеңіз " +
-      wordCount +
-      " сөз.",
-    flags: {
-      promptInjectionSuspected: false,
-      offTopic: false,
-      tooShort: wordCount < input.scenario.explanationTask.minWords,
-    },
-  };
+  if (injection) {
+    return {
+      ...validated,
+      total: 0,
+      flags: {
+        promptInjectionSuspected: true,
+        offTopic: validated.flags?.offTopic ?? false,
+        tooShort: validated.flags?.tooShort ?? false,
+      },
+    };
+  }
+  return validated;
 }

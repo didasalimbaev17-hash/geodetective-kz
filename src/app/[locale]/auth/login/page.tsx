@@ -1,8 +1,10 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { LoginForm } from "./LoginForm";
 import { Link } from "@/i18n/routing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SUPABASE_CONFIGURED } from "@/lib/env";
+import { getCurrentUserProfile } from "@/server/auth/get-user";
 import { Info } from "lucide-react";
 
 export default async function LoginPage({
@@ -13,6 +15,12 @@ export default async function LoginPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+
+  // Already logged in → bounce to dashboard
+  const user = await getCurrentUserProfile();
+  if (user) {
+    redirect(user.role === "teacher" ? "/teacher/dashboard" : "/student/dashboard");
+  }
 
   return (
     <div className="container max-w-md mx-auto py-20">

@@ -1,7 +1,9 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import { RegisterForm } from "./RegisterForm";
 import { Link } from "@/i18n/routing";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrentUserProfile } from "@/server/auth/get-user";
 
 export default async function RegisterPage({
   params,
@@ -14,6 +16,12 @@ export default async function RegisterPage({
   const { role } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
+
+  // Already logged in → bounce to dashboard
+  const user = await getCurrentUserProfile();
+  if (user) {
+    redirect(user.role === "teacher" ? "/teacher/dashboard" : "/student/dashboard");
+  }
 
   const initialRole =
     role === "teacher" ? "teacher" : ("student" as "student" | "teacher");

@@ -126,6 +126,7 @@ export function GameContainer({ scenario }: { scenario: Scenario }) {
       {stage === "simulation" && (
         <SimulationStep
           scenario={scenario}
+          chosenSolutionId={state.context.chosenSolutionId}
           onContinue={() => send({ type: "SIMULATION_DONE" })}
         />
       )}
