@@ -21,35 +21,102 @@ import {
 
 const INDICATOR_META: Record<
   string,
-  { icon: React.ComponentType<{ className?: string }>; label_kk: string; label_ru: string; unit: string; tone: string }
+  {
+    icon: React.ComponentType<{ className?: string }>;
+    label_kk: string;
+    label_ru: string;
+    unit_kk: string;
+    unit_ru: string;
+    tone: string;
+  }
 > = {
   waterLevel: {
     icon: Waves,
     label_kk: "Су деңгейі",
     label_ru: "Уровень воды",
-    unit: "м",
+    unit_kk: "м",
+    unit_ru: "м",
     tone: "text-secondary",
   },
   fishTons: {
     icon: Fish,
     label_kk: "Балық аулау",
     label_ru: "Улов рыбы",
-    unit: "т/жыл",
+    unit_kk: "т/жыл",
+    unit_ru: "т/год",
     tone: "text-success",
   },
   salinityGL: {
     icon: TestTube2,
     label_kk: "Тұздылық",
     label_ru: "Солёность",
-    unit: "г/л",
+    unit_kk: "г/л",
+    unit_ru: "г/л",
     tone: "text-warning",
   },
   populationAralsk: {
     icon: Users,
     label_kk: "Аралск халқы",
-    label_ru: "Население",
-    unit: "адам",
+    label_ru: "Население Аральска",
+    unit_kk: "адам",
+    unit_ru: "чел.",
     tone: "text-primary",
+  },
+  pm25Winter: {
+    icon: Waves,
+    label_kk: "PM2.5 қыста",
+    label_ru: "PM2.5 зимой",
+    unit_kk: "мкг/м³",
+    unit_ru: "мкг/м³",
+    tone: "text-warning",
+  },
+  healthIndex: {
+    icon: Users,
+    label_kk: "Денсаулық индексі",
+    label_ru: "Индекс здоровья",
+    unit_kk: "%",
+    unit_ru: "%",
+    tone: "text-success",
+  },
+  cancerCases: {
+    icon: TestTube2,
+    label_kk: "Қатерлі ісік (100 000-ға)",
+    label_ru: "Онкология (на 100 000)",
+    unit_kk: "жағдай",
+    unit_ru: "случ.",
+    tone: "text-danger",
+  },
+  sealPopulation: {
+    icon: Fish,
+    label_kk: "Тюлень саны",
+    label_ru: "Популяция тюленей",
+    unit_kk: "дана",
+    unit_ru: "особ.",
+    tone: "text-primary",
+  },
+  oilProd: {
+    icon: TestTube2,
+    label_kk: "Мұнай өндірісі",
+    label_ru: "Добыча нефти",
+    unit_kk: "млн т/жыл",
+    unit_ru: "млн т/год",
+    tone: "text-warning",
+  },
+  waterFlow: {
+    icon: Waves,
+    label_kk: "Су ағыны",
+    label_ru: "Сток",
+    unit_kk: "км³/жыл",
+    unit_ru: "км³/год",
+    tone: "text-secondary",
+  },
+  pollutionIndex: {
+    icon: TestTube2,
+    label_kk: "Ластану индексі",
+    label_ru: "Индекс загрязнения",
+    unit_kk: "%",
+    unit_ru: "%",
+    tone: "text-danger",
   },
 };
 
@@ -262,7 +329,7 @@ export function SimulationStep({
                       })}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {meta.unit}
+                      {locale === "ru" ? meta.unit_ru : meta.unit_kk}
                     </span>
                   </div>
                 </CardContent>
