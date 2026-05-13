@@ -1,12 +1,20 @@
 import type { Scenario } from "@/schemas/case.schema";
 import { aralScenario } from "./aral";
+import { balkhashScenario } from "./balkhash";
+import { almatySmogScenario } from "./almaty-smog";
+import { semeyScenario } from "./semey";
+import { caspianScenario } from "./caspian";
+import { irtyshScenario } from "./irtysh";
 
-export const SEED_SCENARIOS: Scenario[] = [aralScenario];
+export const SEED_SCENARIOS: Scenario[] = [
+  aralScenario,
+  balkhashScenario,
+  almatySmogScenario,
+  semeyScenario,
+  caspianScenario,
+  irtyshScenario,
+];
 
-/**
- * Resolves scenario by ID. In MVP — from in-memory seed.
- * Once DB is populated, this will query `scenarios` table.
- */
 export function getScenarioById(id: string): Scenario | null {
   return SEED_SCENARIOS.find((s) => s.id === id) ?? null;
 }
@@ -15,9 +23,6 @@ export function getAllScenarios(): Scenario[] {
   return SEED_SCENARIOS;
 }
 
-/**
- * Метаданные для каталога (без полного контента — лёгкое чтение)
- */
 export type ScenarioMeta = {
   id: string;
   slug: string;

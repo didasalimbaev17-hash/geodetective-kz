@@ -131,72 +131,52 @@ export default async function LandingPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {scenarios.map((s) => (
-            <Card key={s.id} className="overflow-hidden group">
-              {s.coverImage && (
-                <div className="relative aspect-[16/9] overflow-hidden bg-surface">
-                  <img
-                    src={s.coverImage}
-                    alt={getLocalizedText(s.title, locale)}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                </div>
-              )}
-              <CardContent className="p-5">
-                <h3 className="font-display text-xl font-semibold mb-2 line-clamp-1">
-                  {getLocalizedText(s.title, locale)}
-                </h3>
-                {s.subtitle && (
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                    {getLocalizedText(s.subtitle, locale)}
-                  </p>
-                )}
-                <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono">
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={
-                          i < s.difficulty
-                            ? "size-3 fill-primary text-primary"
-                            : "size-3 text-muted"
-                        }
-                      />
-                    ))}
-                  </div>
-                  <span className="flex items-center gap-1">
-                    <Clock className="size-3" />
-                    {s.estimatedMinutes}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-
-          {/* Placeholder cards for upcoming cases */}
-          {[
-            { title: "Балқаш көлі" },
-            { title: "Алматы смог" },
-            { title: "Семей полигоны" },
-            { title: "Каспий теңізі" },
-            { title: "Иртыш өзені" },
-          ].map((p, i) => (
-            <Card
-              key={i}
-              className="overflow-hidden bg-card/50 border-dashed border-border/60"
+            <Link
+              key={s.id}
+              href={`/student/case/${s.id}` as never}
+              className="block"
             >
-              <div className="aspect-[16/9] bg-surface flex items-center justify-center">
-                <Compass className="size-12 text-muted opacity-30" strokeWidth={1} />
-              </div>
-              <CardContent className="p-5">
-                <h3 className="font-display text-xl font-semibold mb-2 text-muted-foreground">
-                  {p.title}
-                </h3>
-                <Badge variant="outline" className="text-xs">
-                  Жақында
-                </Badge>
-              </CardContent>
-            </Card>
+              <Card className="overflow-hidden group h-full hover:border-primary/40 hover:-translate-y-0.5 transition-all">
+                {s.coverImage && (
+                  <div className="relative aspect-[16/9] overflow-hidden bg-surface">
+                    <img
+                      src={s.coverImage}
+                      alt={getLocalizedText(s.title, locale)}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+                  </div>
+                )}
+                <CardContent className="p-5">
+                  <h3 className="font-display text-xl font-semibold mb-2 line-clamp-1">
+                    {getLocalizedText(s.title, locale)}
+                  </h3>
+                  {s.subtitle && (
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {getLocalizedText(s.subtitle, locale)}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={
+                            i < s.difficulty
+                              ? "size-3 fill-primary text-primary"
+                              : "size-3 text-muted"
+                          }
+                        />
+                      ))}
+                    </div>
+                    <span className="flex items-center gap-1">
+                      <Clock className="size-3" />
+                      {s.estimatedMinutes}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>

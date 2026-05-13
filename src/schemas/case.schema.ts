@@ -173,7 +173,7 @@ export const simulationSchema = z.object({
       lakeMorph: z.boolean().optional(),
       riversRedraw: z.boolean().optional(),
       colorOverlay: z.string().optional(),
-      easing: z.string().default("easeInOutCubic"),
+      easing: z.string().optional(),
     })
     .optional(),
 });
