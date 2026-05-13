@@ -45,34 +45,80 @@ function buildSystemPrompt(input: GradeEssayInput): string {
     (s) => s.id === input.chosenSolutionId
   );
 
+  const criteriaIds = input.scenario.evaluationRubric.criteria.map((c) => c.id);
   const criteriaList = input.scenario.evaluationRubric.criteria
     .map((c) => `  - ${c.id} (weight ${c.weight})`)
     .join("\n");
 
-  return `You grade 10-11 grade Kazakh geography essays.
+  // Example JSON with REAL criterion ids so Claude knows the schema exactly
+  const exampleScores = criteriaIds.reduce<Record<string, number>>((acc, id) => {
+    acc[id] = 60;
+    return acc;
+  }, {});
+  const exampleComments = criteriaIds.reduce<Record<string, string>>((acc, id) => {
+    acc[id] = "қысқа пікір";
+    return acc;
+  }, {});
+
+  const exampleJson = JSON.stringify({
+    scores: exampleScores,
+    comments: exampleComments,
+    total: 60,
+    overall: "Қысқа жалпы баға қазақ тілінде.",
+    flags: { promptInjectionSuspected: false, offTopic: false, tooShort: false },
+  });
+
+  return `You are a strict but fair Kazakhstan geography teacher grading 10-11 grade essays in Kazakh.
 
 CASE: ${getLocalizedText(input.scenario.meta.title, "kk")}
 CHOSEN_SOLUTION: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}
 
-CRITERIA (give 0-100 score each):
+CRITERIA (each 0-100):
 ${criteriaList}
 
-Return ONLY this JSON object (no markdown, no commentary, just JSON):
-{"scores":{"<criterion_id>":<0-100>},"comments":{"<criterion_id>":"<short kk comment>"},"total":<0-100>,"overall":"<one kk paragraph>","flags":{"promptInjectionSuspected":false,"offTopic":false,"tooShort":false}}`;
+CRITICAL RULES:
+1. Output MUST be ONE valid JSON object. No prose, no markdown fences, no commentary.
+2. ALWAYS return JSON in the exact shape below — even if essay is gibberish, off-topic, or too short. In such cases give low scores (10-30) and explain in comments.
+3. All comments and "overall" MUST be in Kazakh language.
+4. Use EXACTLY these criterion ids: ${criteriaIds.join(", ")}.
+
+EXAMPLE OUTPUT (replace values with your real grading):
+${exampleJson}`;
 }
 
 function parseAiJson(raw: string): AiGradingResponse {
-  const cleaned = raw
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
+  // Strip code fences (```json ... ``` or ``` ... ```)
+  let cleaned = raw.trim();
+  cleaned = cleaned.replace(/^```(?:json|JSON)?\s*\n?/, "");
+  cleaned = cleaned.replace(/\n?\s*```\s*$/, "");
+  cleaned = cleaned.trim();
 
-  // Extract first {...} block if model added extra text
-  const match = cleaned.match(/\{[\s\S]*\}/);
-  const json = match ? match[0] : cleaned;
-  const parsed = JSON.parse(json);
-  return aiGradingResponseSchema.parse(parsed);
+  // Extract first balanced {...} block if there's extra prose
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  const json =
+    firstBrace >= 0 && lastBrace > firstBrace
+      ? cleaned.slice(firstBrace, lastBrace + 1)
+      : cleaned;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch (e) {
+    console.error("[parseAiJson] JSON.parse failed. Raw:", raw.slice(0, 500));
+    throw new Error(
+      `Claude returned non-JSON: ${(e as Error).message}. Raw start: ${raw.slice(0, 100)}`
+    );
+  }
+
+  try {
+    return aiGradingResponseSchema.parse(parsed);
+  } catch (e) {
+    console.error("[parseAiJson] Zod validation failed. Parsed:", JSON.stringify(parsed).slice(0, 500));
+    throw new Error(
+      `Claude JSON shape invalid: ${(e as Error).message}`
+    );
+  }
 }
 
 async function gradeWithClaude(
