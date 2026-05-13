@@ -65,6 +65,24 @@ export function DebriefStep({
         />
       </div>
 
+      {aiEvaluation?.flags?.offTopic && (
+        <Card className="border-danger/40 bg-danger/5 mb-4">
+          <CardContent className="p-4 flex items-start gap-3">
+            <ExternalLink className="size-5 text-danger flex-shrink-0 mt-0.5" />
+            <div>
+              <div className="font-semibold text-danger text-sm">
+                {locale === "ru" ? "Эссе не по теме" : "Эссе тақырыпқа сай емес"}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {locale === "ru"
+                  ? "AI определил что эссе не относится к расследованию. Балл сильно снижен."
+                  : "ИИ эссе тергеуге қатысты емес деп тапты. Балл айтарлықтай төмендетілді."}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {aiEvaluation && (
         <Card className="detective-card mb-6">
           <CardContent className="p-6">

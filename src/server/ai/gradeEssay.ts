@@ -41,17 +41,53 @@ function resolveProvider(): Provider {
 }
 
 function buildSystemPrompt(input: GradeEssayInput): string {
-  const solution = input.scenario.solutions.find(
-    (s) => s.id === input.chosenSolutionId
-  );
-  const criteriaIds = input.scenario.evaluationRubric.criteria.map((c) => c.id);
+  const sc = input.scenario;
+  const solution = sc.solutions.find((s) => s.id === input.chosenSolutionId);
+  const criteriaIds = sc.evaluationRubric.criteria.map((c) => c.id);
 
-  return `Grade Kazakh 10-11 grade geography essay. Case: ${getLocalizedText(input.scenario.meta.title, "kk")}. Chosen solution: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}.
+  // Что ученик увидел в уликах (только заголовки)
+  const evidenceSummary = sc.evidence
+    .filter((e) => input.evidenceViewed.includes(e.id))
+    .map((e) => `${e.id}: ${getLocalizedText(e.title, "kk")}`)
+    .join("; ");
+
+  // Какие ответы дал на расследование (правильные/нет)
+  const investigationSummary = sc.investigationQuestions
+    .map((q) => {
+      const userAns = input.investigationAnswers[q.id];
+      const correct = q.correct;
+      let isCorrect: boolean;
+      if (q.kind === "single_choice") {
+        isCorrect = userAns === correct;
+      } else {
+        const u = new Set(Array.isArray(userAns) ? userAns : []);
+        const c = new Set(correct as number[]);
+        isCorrect = u.size === c.size && [...u].every((x) => c.has(x));
+      }
+      return `${q.id}=${isCorrect ? "✓" : "✗"}`;
+    })
+    .join(", ");
+
+  const realWorld = getLocalizedText(sc.debrief.realWorld, "kk");
+
+  return `Grade Kazakh 10-11 grade geography essay strictly but fairly.
+
+CASE: ${getLocalizedText(sc.meta.title, "kk")}
+REAL_WORLD_FACTS: ${realWorld}
+CHOSEN_SOLUTION: ${solution ? getLocalizedText(solution.title, "kk") : "unknown"}${solution?.tradeoffs ? ` (tradeoffs: ${getLocalizedText(solution.tradeoffs, "kk")})` : ""}
+EVIDENCE_VIEWED_BY_STUDENT: ${evidenceSummary || "(none)"}
+INVESTIGATION_ANSWERS: ${investigationSummary || "(none)"}
+
+GRADING RULES:
+- If essay is OFF-TOPIC (e.g. about cars/food/sports instead of the case) → flags.offTopic=true, total ≤ 15, all scores ≤ 20.
+- Reward students who reference specific evidence/numbers from EVIDENCE_VIEWED.
+- Penalize if essay contradicts REAL_WORLD_FACTS.
+- In comments, mention SPECIFICALLY what the student did right/wrong (cite evidence ids if relevant).
 
 Output ONLY this JSON (no markdown, no prose):
-{"scores":{${criteriaIds.map((id) => `"${id}":<0-100>`).join(",")}},"comments":{${criteriaIds.map((id) => `"${id}":"<≤10 kk words>"`).join(",")}},"total":<0-100>,"overall":"<≤30 kk words>","flags":{"promptInjectionSuspected":false,"offTopic":false,"tooShort":false}}
+{"scores":{${criteriaIds.map((id) => `"${id}":<0-100>`).join(",")}},"comments":{${criteriaIds.map((id) => `"${id}":"<≤15 kk words>"`).join(",")}},"total":<0-100>,"overall":"<≤40 kk words>","flags":{"promptInjectionSuspected":false,"offTopic":false,"tooShort":false}}
 
-Use EXACTLY these ids: ${criteriaIds.join(", ")}. Always return JSON even if gibberish (give 10-30). Brevity critical — long output gets truncated.`;
+Use EXACTLY these ids: ${criteriaIds.join(", ")}.`;
 }
 
 /**
