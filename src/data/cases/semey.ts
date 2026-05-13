@@ -193,7 +193,7 @@ export const semeyScenario: Scenario = {
       },
       icon: "shield",
       recommended: true,
-      effects: { healthIndex: { delta: 25 } },
+      effects: { healthIndex: { delta: 25 }, cancerCases: { delta: -30, unit: "%" } },
       tradeoffs: {
         kk: "Қымбат, бірақ адам өмірін құтқарады.",
         ru: "Дорого, но спасает жизни.",
@@ -206,7 +206,7 @@ export const semeyScenario: Scenario = {
       title: { kk: "Топырақ пен суды тазалау", ru: "Очистка почвы и воды" },
       short: { kk: "Радиоактивті аумақтарды қалпына келтіру", ru: "Реабилитация территорий" },
       icon: "leaf",
-      effects: { soilQuality: { delta: 40 } },
+      effects: { healthIndex: { delta: 15 }, cancerCases: { delta: -40, unit: "%" } },
       tradeoffs: {
         kk: "Өте қымбат, технологиялар әлсіз.",
         ru: "Очень дорого, технологии слабые.",
@@ -219,7 +219,7 @@ export const semeyScenario: Scenario = {
       title: { kk: "Зардап шеккендерге өтемақы + көшіру", ru: "Компенсации + переселение" },
       short: { kk: "Тұрғындарға қаражат + жаңа үй", ru: "Деньги + новое жильё" },
       icon: "shield",
-      effects: { populationStability: { delta: 15 } },
+      effects: { healthIndex: { delta: 10 }, cancerCases: { delta: -10, unit: "%" } },
       tradeoffs: {
         kk: "Мәдени мұра жоғалады, түбірі үзіледі.",
         ru: "Утрата культурного наследия, корней.",
@@ -235,7 +235,7 @@ export const semeyScenario: Scenario = {
         ru: "Научный центр в Курчатове",
       },
       icon: "leaf",
-      effects: { knowledge: { delta: 50 } },
+      effects: { healthIndex: { delta: 5 }, cancerCases: { delta: -5, unit: "%" } },
       tradeoffs: {
         kk: "Ұзақ мерзімді, тікелей көмек жоқ.",
         ru: "Долгосрочно, нет прямой помощи людям.",

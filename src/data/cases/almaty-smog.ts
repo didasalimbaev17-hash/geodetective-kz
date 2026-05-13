@@ -206,7 +206,7 @@ export const almatySmogScenario: Scenario = {
       short: { kk: "Көмірден таза газға", ru: "От угля к чистому газу" },
       icon: "leaf",
       recommended: true,
-      effects: { pm25: { delta: -60, unit: "%" } },
+      effects: { pm25Winter: { delta: -60, unit: "%" }, healthIndex: { delta: 25 } },
       tradeoffs: {
         kk: "Қымбат, бірақ ұзақ мерзімді шешім.",
         ru: "Дорого, но долгосрочно эффективно.",
@@ -219,7 +219,7 @@ export const almatySmogScenario: Scenario = {
       title: { kk: "Электробус + метро кеңейту + автокөлік шектеу", ru: "Электробусы + расширение метро + ограничение авто" },
       short: { kk: "Қоғамдық көлікке басымдық", ru: "Приоритет общественному" },
       icon: "leaf",
-      effects: { pm25: { delta: -25, unit: "%" } },
+      effects: { pm25Winter: { delta: -25, unit: "%" }, healthIndex: { delta: 12 } },
       tradeoffs: {
         kk: "Тұрғындардың ыңғайсыздығы.",
         ru: "Неудобство для жителей.",
@@ -232,7 +232,7 @@ export const almatySmogScenario: Scenario = {
       title: { kk: "ТЭЦ-ке заманауи сүзгілер", ru: "Современные фильтры на ТЭЦ" },
       short: { kk: "Көмірді қалдырып, тазалау", ru: "Оставить уголь, очистить выбросы" },
       icon: "shield",
-      effects: { pm25: { delta: -15, unit: "%" } },
+      effects: { pm25Winter: { delta: -15, unit: "%" }, healthIndex: { delta: 6 } },
       tradeoffs: {
         kk: "Уақытша шара, көмір қалады.",
         ru: "Временно, уголь остаётся.",
@@ -245,7 +245,7 @@ export const almatySmogScenario: Scenario = {
       title: { kk: "Ештеңе істемеу", ru: "Бездействие" },
       short: { kk: "Жағдай нашарлай береді", ru: "Ситуация ухудшится" },
       icon: "alert-triangle",
-      effects: { pm25: { delta: 10, unit: "%" } },
+      effects: { pm25Winter: { delta: 10, unit: "%" }, healthIndex: { delta: -10 } },
       tradeoffs: {
         kk: "Балалар ауруы өседі, өлім көбейеді.",
         ru: "Детские болезни и смертность вырастут.",

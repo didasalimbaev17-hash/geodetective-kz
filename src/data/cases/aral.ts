@@ -321,10 +321,10 @@ export const aralScenario: Scenario = {
       realWorldBasis: "Дамба Кокарал, 2005, Всемирный банк",
       recommended: true,
       effects: {
-        waterLevel: { north: 4.0, south: -1.5, unit: "m" },
-        salinity: { north: -50, south: 5, unit: "%" },
-        fishIndustry: { delta: 60, unit: "%" },
-        populationAralsk: { delta: 12, unit: "%" },
+        waterLevel: { delta: 4, unit: "m" },
+        salinityGL: { delta: -45, unit: "%" },
+        fishTons: { delta: 1100, unit: "%" },
+        populationAralsk: { delta: 27, unit: "%" },
       },
       tradeoffs: {
         kk: "Солтүстік Арал қалпына келеді, бірақ оңтүстік бөлік толық жоғалады.",
@@ -345,9 +345,10 @@ export const aralScenario: Scenario = {
       },
       icon: "leaf",
       effects: {
-        waterLevel: { north: 2.0, south: 1.5, unit: "m" },
-        gdpUzbekistan: { delta: -8, unit: "%" },
-        salinity: { north: -20, south: -15, unit: "%" },
+        waterLevel: { delta: 2, unit: "m" },
+        salinityGL: { delta: -20, unit: "%" },
+        fishTons: { delta: 400, unit: "%" },
+        populationAralsk: { delta: 9, unit: "%" },
       },
       tradeoffs: {
         kk: "Көл біртіндеп қалпына келеді, бірақ Өзбекстан экономикасы зардап шегеді.",
@@ -368,8 +369,10 @@ export const aralScenario: Scenario = {
       },
       icon: "pipeline",
       effects: {
-        waterLevel: { north: 5.0, south: 4.0, unit: "m" },
-        feasibility: "low",
+        waterLevel: { delta: 5, unit: "m" },
+        salinityGL: { delta: -35, unit: "%" },
+        fishTons: { delta: 700, unit: "%" },
+        populationAralsk: { delta: 15, unit: "%" },
       },
       tradeoffs: {
         kk: "Шешім тиімді, бірақ өте қымбат әрі экологиялық тәуекелі үлкен. Сібірде жаңа проблемалар туады.",
@@ -390,9 +393,10 @@ export const aralScenario: Scenario = {
       },
       icon: "wheat",
       effects: {
-        waterLevel: { north: 1.5, south: 1.0, unit: "m" },
-        gdpUzbekistan: { delta: -3, unit: "%" },
-        soilQuality: { delta: 25, unit: "%" },
+        waterLevel: { delta: 1.5, unit: "m" },
+        salinityGL: { delta: -15, unit: "%" },
+        fishTons: { delta: 250, unit: "%" },
+        populationAralsk: { delta: 6, unit: "%" },
       },
       tradeoffs: {
         kk: "Тұрақты шешім, бірақ нәтиже баяу. Фермерлерді қайта оқыту қажет.",
@@ -413,9 +417,10 @@ export const aralScenario: Scenario = {
       },
       icon: "alert-triangle",
       effects: {
-        waterLevel: { north: -1.0, south: -2.0, unit: "m" },
-        fishIndustry: { delta: -100, unit: "%" },
-        healthIndex: { delta: -15, unit: "%" },
+        waterLevel: { delta: -2, unit: "m" },
+        salinityGL: { delta: 40, unit: "%" },
+        fishTons: { delta: -100, unit: "%" },
+        populationAralsk: { delta: -25, unit: "%" },
       },
       tradeoffs: {
         kk: "Ең арзан, бірақ көл толық жоғалады және халықтың денсаулығы нашарлай береді.",

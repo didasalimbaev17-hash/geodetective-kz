@@ -183,7 +183,11 @@ export const balkhashScenario: Scenario = {
       },
       icon: "shield",
       recommended: true,
-      effects: { waterLevel: { delta: 1.5 } },
+      effects: {
+        waterLevel: { delta: 1.5, unit: "m" },
+        salinityGL: { delta: -15, unit: "%" },
+        fishTons: { delta: 60, unit: "%" },
+      },
       tradeoffs: {
         kk: "Уақыт көп қажет (5-10 жыл), сыртқы саясатпен байланысты.",
         ru: "Долго (5-10 лет), зависит от внешней политики.",
@@ -199,7 +203,11 @@ export const balkhashScenario: Scenario = {
         ru: "Внедрить эффективные технологии в Алматинской обл.",
       },
       icon: "leaf",
-      effects: { waterLevel: { delta: 0.8 } },
+      effects: {
+        waterLevel: { delta: 0.8, unit: "m" },
+        salinityGL: { delta: -8, unit: "%" },
+        fishTons: { delta: 30, unit: "%" },
+      },
       tradeoffs: {
         kk: "Қымбат, фермерлерге субсидия керек.",
         ru: "Дорого, нужны субсидии фермерам.",
@@ -212,7 +220,11 @@ export const balkhashScenario: Scenario = {
       title: { kk: "Жасанды бөгет — батыс бөлікті құтқару", ru: "Дамба — спасти западную часть" },
       short: { kk: "Балқаштың тұщы бөлігін оқшаулау", ru: "Изолировать пресную часть" },
       icon: "shield",
-      effects: { waterLevel: { west: 2, east: -3 } },
+      effects: {
+        waterLevel: { delta: 2, unit: "m" },
+        salinityGL: { delta: -30, unit: "%" },
+        fishTons: { delta: 40, unit: "%" },
+      },
       tradeoffs: {
         kk: "Шығыс тұзды бөлік толық жоғалады.",
         ru: "Восточная часть полностью исчезнет.",
@@ -225,7 +237,11 @@ export const balkhashScenario: Scenario = {
       title: { kk: "Ештеңе істемеу", ru: "Бездействие" },
       short: { kk: "10 жылда — екінші Арал", ru: "Через 10 лет — второй Арал" },
       icon: "alert-triangle",
-      effects: { waterLevel: { delta: -3 } },
+      effects: {
+        waterLevel: { delta: -3, unit: "m" },
+        salinityGL: { delta: 80, unit: "%" },
+        fishTons: { delta: -90, unit: "%" },
+      },
       tradeoffs: {
         kk: "Көл толық жоғалуы мүмкін.",
         ru: "Озеро может исчезнуть полностью.",

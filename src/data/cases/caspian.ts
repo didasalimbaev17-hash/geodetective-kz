@@ -178,7 +178,7 @@ export const caspianScenario: Scenario = {
       short: { kk: "5 мемлекет арасында келісім + аумақ", ru: "Соглашение 5 стран + резерват" },
       icon: "shield",
       recommended: true,
-      effects: { sealPopulation: { delta: 50 } },
+      effects: { sealPopulation: { delta: 50, unit: "%" }, waterLevel: { delta: 0.3, unit: "m" }, oilProd: { delta: -10, unit: "%" } },
       tradeoffs: {
         kk: "Мұнай өндірісіне шектеу қою керек.",
         ru: "Нужны ограничения на нефтедобычу.",
@@ -191,7 +191,7 @@ export const caspianScenario: Scenario = {
       title: { kk: "Мұнай өндіруді азайту + эко-стандарттар", ru: "Сокращение нефтедобычи + эко-стандарты" },
       short: { kk: "Қатаң экологиялық бақылау", ru: "Жёсткий экоконтроль" },
       icon: "leaf",
-      effects: { pollution: { delta: -40 } },
+      effects: { sealPopulation: { delta: 20, unit: "%" }, oilProd: { delta: -50, unit: "%" }, waterLevel: { delta: 0.1, unit: "m" } },
       tradeoffs: {
         kk: "ЖІӨ-ге кері әсер, бюджет кірісі азаяды.",
         ru: "Падение ВВП и бюджетных доходов.",
@@ -204,7 +204,7 @@ export const caspianScenario: Scenario = {
       title: { kk: "Ресеймен Еділ ағыны туралы келісім", ru: "Соглашение с РФ по стоку Волги" },
       short: { kk: "Еділден көп су жіберу", ru: "Больше воды из Волги" },
       icon: "shield",
-      effects: { waterLevel: { delta: 0.5 } },
+      effects: { waterLevel: { delta: 0.5, unit: "m" }, sealPopulation: { delta: 10, unit: "%" }, oilProd: { delta: -2, unit: "%" } },
       tradeoffs: {
         kk: "Ресей өз бөгеттерін ашуы керек.",
         ru: "РФ должна открыть плотины.",
@@ -217,7 +217,7 @@ export const caspianScenario: Scenario = {
       title: { kk: "Ештеңе істемеу", ru: "Бездействие" },
       short: { kk: "20 жылда — экологиялық апат", ru: "Через 20 лет — экологическая катастрофа" },
       icon: "alert-triangle",
-      effects: { waterLevel: { delta: -2 } },
+      effects: { waterLevel: { delta: -2, unit: "m" }, sealPopulation: { delta: -40, unit: "%" }, oilProd: { delta: 10, unit: "%" } },
       tradeoffs: {
         kk: "Тюлень жойылады, балық кетеді, порттар тоқтайды.",
         ru: "Тюлень вымрет, рыба уйдёт, порты встанут.",

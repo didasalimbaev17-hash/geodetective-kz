@@ -120,11 +120,20 @@ const INDICATOR_META: Record<
   },
 };
 
-type SolutionEffects = Record<string, unknown>;
+type SolutionEffect = { delta?: number; unit?: string };
+type SolutionEffects = Record<string, SolutionEffect | unknown>;
+
+function applyEffect(base: number, eff: SolutionEffect): number {
+  if (typeof eff.delta !== "number") return base;
+  if (eff.unit === "%") {
+    return Math.max(0, base * (1 + eff.delta / 100));
+  }
+  return base + eff.delta;
+}
 
 /**
  * Применяет эффекты выбранного решения к базовым snapshot-индикаторам.
- * Возвращает три новых snapshot'а (t=0, t=0.5, t=1.0) с правильными значениями.
+ * Каждый ключ в `effects` напрямую соответствует ключу в `indicators`.
  */
 function buildScenarioSnapshots(
   scenario: Scenario,
@@ -142,79 +151,21 @@ function buildScenarioSnapshots(
     number
   >;
 
-  // Compute final indicators (t=1.0)
+  // Final indicators: для каждого indicator key пробуем найти эффект с тем же именем
   const finalIndicators: Record<string, number> = { ...baseIndicators };
   for (const key of Object.keys(baseIndicators)) {
     const base = Number(baseIndicators[key] ?? 0);
-    const eff = effects[key] as
-      | { delta?: number; north?: number; south?: number; west?: number; east?: number; unit?: string }
-      | undefined;
-    if (!eff) continue;
-
-    // 1) Absolute delta in physical unit (m, °C, и т.д.)
-    if (typeof eff.delta === "number" && (!eff.unit || eff.unit === "m" || eff.unit === "%")) {
-      if (eff.unit === "%") {
-        finalIndicators[key] = base * (1 + eff.delta / 100);
-      } else {
-        finalIndicators[key] = base + eff.delta;
-      }
-    } else if (typeof eff.north === "number") {
-      // Two-part lake: take north
-      if (eff.unit === "%") {
-        finalIndicators[key] = base * (1 + eff.north / 100);
-      } else {
-        finalIndicators[key] = base + eff.north;
-      }
-    } else if (typeof eff.west === "number") {
-      finalIndicators[key] = base + eff.west;
+    const eff = effects[key];
+    if (eff && typeof eff === "object" && "delta" in eff) {
+      finalIndicators[key] = applyEffect(base, eff as SolutionEffect);
     }
   }
 
-  // Cross-mappings (when effect key != indicator key)
-  // fishIndustry % → fishTons
-  const fish = (effects.fishIndustry as { delta?: number } | undefined)?.delta;
-  if (typeof fish === "number" && "fishTons" in baseIndicators) {
-    finalIndicators.fishTons = Math.max(0, baseIndicators.fishTons * (1 + fish / 100));
-  }
-  // populationAralsk
-  const popAralsk = (effects.populationAralsk as { delta?: number } | undefined)?.delta;
-  if (typeof popAralsk === "number" && "populationAralsk" in baseIndicators) {
-    finalIndicators.populationAralsk = Math.max(0, baseIndicators.populationAralsk * (1 + popAralsk / 100));
-  }
-  // sealPopulation
-  const seal = (effects.sealPopulation as { delta?: number } | undefined)?.delta;
-  if (typeof seal === "number" && "sealPopulation" in baseIndicators) {
-    finalIndicators.sealPopulation = Math.max(0, baseIndicators.sealPopulation * (1 + seal / 100));
-  }
-  // healthIndex
-  const health = (effects.healthIndex as { delta?: number } | undefined)?.delta;
-  if (typeof health === "number" && "healthIndex" in baseIndicators) {
-    finalIndicators.healthIndex = Math.max(0, Math.min(100, baseIndicators.healthIndex + health));
-  }
-  // pollution → pollutionIndex
-  const pollution = (effects.pollution as { delta?: number } | undefined)?.delta;
-  if (typeof pollution === "number" && "pollutionIndex" in baseIndicators) {
-    finalIndicators.pollutionIndex = Math.max(0, Math.min(100, baseIndicators.pollutionIndex + pollution));
-  }
-  // pm25
-  const pm25 = (effects.pm25 as { delta?: number } | undefined)?.delta;
-  if (typeof pm25 === "number" && "pm25Winter" in baseIndicators) {
-    finalIndicators.pm25Winter = Math.max(0, baseIndicators.pm25Winter * (1 + pm25 / 100));
-  }
-  // cancerCases (positive delta = improvement = lower)
-  if (typeof health === "number" && "cancerCases" in baseIndicators) {
-    finalIndicators.cancerCases = Math.max(0, baseIndicators.cancerCases * (1 - health / 100));
-  }
-  // waterFlow (km3/yr)
-  const waterFlow = (effects.waterFlow as { delta?: number } | undefined)?.delta;
-  if (typeof waterFlow === "number" && "waterFlow" in baseIndicators) {
-    finalIndicators.waterFlow = Math.max(0, baseIndicators.waterFlow + waterFlow);
-  }
-
-  // Mid snapshot = halfway между base и final
+  // Mid snapshot = halfway между base и final (для плавной анимации)
   const midIndicators: Record<string, number> = {};
   for (const key of Object.keys(baseIndicators)) {
-    midIndicators[key] = (baseIndicators[key] + (finalIndicators[key] ?? baseIndicators[key])) / 2;
+    midIndicators[key] =
+      (baseIndicators[key] + (finalIndicators[key] ?? baseIndicators[key])) / 2;
   }
 
   return [

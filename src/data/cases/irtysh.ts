@@ -207,7 +207,7 @@ export const irtyshScenario: Scenario = {
       },
       icon: "shield",
       recommended: true,
-      effects: { waterFlow: { delta: 2 } },
+      effects: { waterFlow: { delta: 2, unit: "km3" }, pollutionIndex: { delta: -10 }, fishTons: { delta: 50, unit: "%" } },
       tradeoffs: {
         kk: "Дипломатиялық күрделілік, уақыт 5-15 жыл.",
         ru: "Сложная дипломатия, 5-15 лет.",
@@ -220,7 +220,7 @@ export const irtyshScenario: Scenario = {
       title: { kk: "Өскемен зауыттарын модернизациялау", ru: "Модернизация заводов Усть-Каменогорска" },
       short: { kk: "Заманауи тазалау жүйелері", ru: "Современная очистка" },
       icon: "leaf",
-      effects: { pollution: { delta: -70 } },
+      effects: { pollutionIndex: { delta: -60 }, fishTons: { delta: 60, unit: "%" }, waterFlow: { delta: 0.3, unit: "km3" } },
       tradeoffs: {
         kk: "Қымбат, өнеркәсіптің қарсылығы.",
         ru: "Дорого, сопротивление промышленности.",
@@ -233,7 +233,7 @@ export const irtyshScenario: Scenario = {
       title: { kk: "Спутник мониторингі + штрафтар", ru: "Спутниковый мониторинг + штрафы" },
       short: { kk: "Заңсыз төгілуді табу", ru: "Выявление нелегальных сбросов" },
       icon: "shield",
-      effects: { pollution: { delta: -30 } },
+      effects: { pollutionIndex: { delta: -30 }, fishTons: { delta: 25, unit: "%" }, waterFlow: { delta: 0.1, unit: "km3" } },
       tradeoffs: {
         kk: "Тек ластануды бақылау, ағынға әсер етпейді.",
         ru: "Только мониторинг, не влияет на сток.",
@@ -246,7 +246,7 @@ export const irtyshScenario: Scenario = {
       title: { kk: "Ештеңе істемеу", ru: "Бездействие" },
       short: { kk: "Ертіс — өлі өзенге айналуы", ru: "Иртыш — мёртвая река" },
       icon: "alert-triangle",
-      effects: { waterFlow: { delta: -2 }, pollution: { delta: 30 } },
+      effects: { waterFlow: { delta: -2, unit: "km3" }, pollutionIndex: { delta: 15 }, fishTons: { delta: -60, unit: "%" } },
       tradeoffs: {
         kk: "Балық кетеді, ауыз су тапшылығы.",
         ru: "Рыба исчезнет, дефицит питьевой воды.",
