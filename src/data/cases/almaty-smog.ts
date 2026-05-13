@@ -15,7 +15,7 @@ export const almatySmogScenario: Scenario = {
     estimatedMinutes: 18,
     tags: ["ауа", "Алматы", "ТЭЦ", "автокөлік"],
     coverImage:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Almaty_overlooking_Mount_Bogdo-Ula.jpg/1280px-Almaty_overlooking_Mount_Bogdo-Ula.jpg",
+      "https://images.unsplash.com/photo-1604537466573-5e94508fd170?w=1280&q=80",
   },
 
   region: { center: { lat: 43.25, lng: 76.95 }, zoom: 10, basemap: "dark" },

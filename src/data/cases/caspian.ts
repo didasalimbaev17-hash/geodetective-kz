@@ -12,7 +12,7 @@ export const caspianScenario: Scenario = {
     estimatedMinutes: 20,
     tags: ["теңіз", "Маңғыстау", "мұнай", "климат"],
     coverImage:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Caspian_Sea_from_orbit.jpg/1280px-Caspian_Sea_from_orbit.jpg",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1280&q=80",
   },
 
   region: { center: { lat: 42.5, lng: 50.5 }, zoom: 5, basemap: "dark" },

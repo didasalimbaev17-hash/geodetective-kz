@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { SafeImage } from "@/components/ui/safe-image";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText, xpForLevel } from "@/lib/utils";
 import { ArrowRight, Clock, Star, Trophy, Sparkles, Flame } from "lucide-react";
@@ -95,19 +96,18 @@ export default async function StudentDashboard({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {scenarios.map((s) => (
           <Card key={s.id} className="detective-card group overflow-hidden">
-            {s.coverImage && (
-              <div className="relative aspect-[16/9] overflow-hidden bg-surface">
-                <img
-                  src={s.coverImage}
-                  alt={getLocalizedText(s.title, locale)}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                <Badge className="absolute top-3 left-3 backdrop-blur-md bg-card/70">
-                  {t("dashboard.startCase")}
-                </Badge>
-              </div>
-            )}
+            <div className="relative aspect-[16/9] overflow-hidden bg-surface">
+              <SafeImage
+                src={s.coverImage ?? ""}
+                alt={getLocalizedText(s.title, locale)}
+                fallbackLabel={getLocalizedText(s.title, locale)}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+              <Badge className="absolute top-3 left-3 backdrop-blur-md bg-card/70">
+                {t("dashboard.startCase")}
+              </Badge>
+            </div>
             <CardContent className="p-5">
               <h3 className="font-display text-xl font-semibold mb-1">
                 {getLocalizedText(s.title, locale)}

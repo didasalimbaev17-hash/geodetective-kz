@@ -5,6 +5,7 @@ import type { Scenario } from "@/schemas/case.schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLocalizedText } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/safe-image";
 import { ArrowRight, FileWarning, MapPin } from "lucide-react";
 
 export function BriefingStep({
@@ -20,17 +21,16 @@ export function BriefingStep({
   return (
     <div className="max-w-4xl mx-auto">
       <Card className="detective-card overflow-hidden">
-        {scenario.briefing.backgroundImage && (
-          <div className="relative aspect-[21/9] overflow-hidden">
-            <img
-              src={scenario.briefing.backgroundImage}
-              alt=""
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
-            <div className="absolute inset-0 scan-effect" />
-          </div>
-        )}
+        <div className="relative aspect-[21/9] overflow-hidden">
+          <SafeImage
+            src={scenario.briefing.backgroundImage ?? ""}
+            alt=""
+            fallbackLabel={getLocalizedText(scenario.meta.title, locale)}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent" />
+          <div className="absolute inset-0 scan-effect" />
+        </div>
 
         <CardContent className="p-8 md:p-12">
           <div className="flex items-center gap-2 mb-6 text-xs font-mono uppercase tracking-widest text-primary">

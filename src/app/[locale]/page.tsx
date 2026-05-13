@@ -3,6 +3,7 @@ import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SafeImage } from "@/components/ui/safe-image";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText } from "@/lib/utils";
 import {
@@ -137,16 +138,15 @@ export default async function LandingPage({
               className="block"
             >
               <Card className="overflow-hidden group h-full hover:border-primary/40 hover:-translate-y-0.5 transition-all">
-                {s.coverImage && (
-                  <div className="relative aspect-[16/9] overflow-hidden bg-surface">
-                    <img
-                      src={s.coverImage}
-                      alt={getLocalizedText(s.title, locale)}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                  </div>
-                )}
+                <div className="relative aspect-[16/9] overflow-hidden bg-surface">
+                  <SafeImage
+                    src={s.coverImage ?? ""}
+                    alt={getLocalizedText(s.title, locale)}
+                    fallbackLabel={getLocalizedText(s.title, locale)}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+                </div>
                 <CardContent className="p-5">
                   <h3 className="font-display text-xl font-semibold mb-2 line-clamp-1">
                     {getLocalizedText(s.title, locale)}

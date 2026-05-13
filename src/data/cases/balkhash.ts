@@ -12,7 +12,7 @@ export const balkhashScenario: Scenario = {
     estimatedMinutes: 22,
     tags: ["экология", "су", "Қазақстан", "трансшекаралық"],
     coverImage:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Lake_Balkhash_-_Landsat_image.jpg/1280px-Lake_Balkhash_-_Landsat_image.jpg",
+      "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1280&q=80",
   },
 
   region: {

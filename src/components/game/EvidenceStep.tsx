@@ -19,6 +19,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
+import { SafeImage } from "@/components/ui/safe-image";
 import {
   LineChart,
   Line,
@@ -69,6 +70,11 @@ export function EvidenceStep({
       <div className="text-center mb-8">
         <h2 className="font-display text-3xl font-bold mb-2">{t("title")}</h2>
         <p className="text-muted-foreground">{t("subtitle")}</p>
+        <p className="text-xs text-primary mt-3 inline-flex items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full border border-primary/20">
+          {locale === "ru"
+            ? "💡 Кликни на любую карточку улики ниже — откроется детальная информация"
+            : "💡 Төмендегі кез келген дәлел картасын басыңыз — толық ақпарат ашылады"}
+        </p>
       </div>
 
       <Card className="mb-6">
@@ -121,7 +127,7 @@ export function EvidenceStep({
                   )}
                   {ev.required && !isViewed && (
                     <Badge variant="warning" className="text-xs">
-                      Маңызды
+                      {locale === "ru" ? "Важно" : "Маңызды"}
                     </Badge>
                   )}
                 </div>
@@ -199,20 +205,24 @@ function EvidenceContent({
               <div className="text-xs font-mono text-muted-foreground mb-1">
                 {c.before.year}
               </div>
-              <img
+              <SafeImage
                 src={c.before.image}
-                alt=""
-                className="w-full rounded-lg border border-border"
+                alt={`Before ${c.before.year}`}
+                fallbackLabel={String(c.before.year)}
+                fallbackHue={200}
+                className="w-full aspect-square rounded-lg border border-border"
               />
             </div>
             <div>
               <div className="text-xs font-mono text-muted-foreground mb-1">
                 {c.after.year}
               </div>
-              <img
+              <SafeImage
                 src={c.after.image}
-                alt=""
-                className="w-full rounded-lg border border-border"
+                alt={`After ${c.after.year}`}
+                fallbackLabel={String(c.after.year)}
+                fallbackHue={30}
+                className="w-full aspect-square rounded-lg border border-border"
               />
             </div>
           </div>
@@ -343,10 +353,11 @@ function EvidenceContent({
         <div className="space-y-4">
           {c.images.map((img, i) => (
             <div key={i}>
-              <img
+              <SafeImage
                 src={img.src}
                 alt=""
-                className="w-full rounded-lg border border-border"
+                fallbackLabel={img.caption ? getLocalizedText(img.caption, locale).slice(0, 30) : "Photo"}
+                className="w-full aspect-video rounded-lg border border-border"
               />
               {img.caption && (
                 <p className="text-sm text-muted-foreground mt-2 italic font-serif">

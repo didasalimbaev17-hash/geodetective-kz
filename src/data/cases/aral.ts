@@ -18,7 +18,7 @@ export const aralScenario: Scenario = {
     estimatedMinutes: 20,
     tags: ["экология", "су_ресурстары", "Қазақстан", "10_сынып"],
     coverImage:
-      "https://earthobservatory.nasa.gov/ContentFeature/WorldOfChange/images/aralsea/aralsea_2018230_lrg.jpg",
+      "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1280&q=80",
   },
 
   region: {
@@ -38,7 +38,7 @@ export const aralScenario: Scenario = {
       ru: "Вам поручено расследовать экологическую катастрофу в Центральной Азии. В 1960 году здесь было четвёртое по величине озеро мира — площадь 68 000 км². Сегодня — только пустыня и скелеты кораблей. Что случилось? Найдите причину.",
     },
     backgroundImage:
-      "https://earthobservatory.nasa.gov/ContentFeature/WorldOfChange/images/aralsea/aralsea_2018230_lrg.jpg",
+      "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=1920&q=80",
   },
 
   evidence: [
@@ -54,13 +54,13 @@ export const aralScenario: Scenario = {
       content: {
         before: {
           image:
-            "https://earthobservatory.nasa.gov/ContentFeature/WorldOfChange/images/aralsea/aralsea_tmo_2000231_lrg.jpg",
-          year: 2000,
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Aral_Sea_1989-2014.jpg/1280px-Aral_Sea_1989-2014.jpg",
+          year: 1989,
         },
         after: {
           image:
-            "https://earthobservatory.nasa.gov/ContentFeature/WorldOfChange/images/aralsea/aralsea_2018230_lrg.jpg",
-          year: 2018,
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/AralSea1989_2008.jpg/1280px-AralSea1989_2008.jpg",
+          year: 2014,
         },
         annotation: {
           kk: "Көл ауданы 68 000 км²-ден 5 130 км²-ге азайды (13 есе).",
@@ -168,7 +168,7 @@ export const aralScenario: Scenario = {
       content: {
         images: [
           {
-            src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/AralShip.jpg/1280px-AralShip.jpg",
+            src: "https://images.unsplash.com/photo-1582551593089-4906c3e4b6e3?w=1280&q=80",
             caption: {
               kk: "Мойнақ маңындағы тат басқан кеме. Бұрынғы порт — қазір 200 км құрғақ жер.",
               ru: "Ржавый корабль возле Муйнака. Бывший порт — теперь 200 км сухой земли.",
