@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { SafeImage } from "@/components/ui/safe-image";
 import { SatelliteFrame } from "@/components/art/SatelliteCompare";
+import { EvidencePhoto } from "@/components/art/EvidencePhoto";
 import {
   LineChart,
   Line,
@@ -350,21 +351,24 @@ function EvidenceContent({
       const c = evidence.content;
       return (
         <div className="space-y-4">
-          {c.images.map((img, i) => (
-            <div key={i}>
-              <SafeImage
-                src={img.src}
-                alt=""
-                fallbackLabel={img.caption ? getLocalizedText(img.caption, locale).slice(0, 30) : "Photo"}
-                className="w-full aspect-video rounded-lg border border-border"
-              />
-              {img.caption && (
-                <p className="text-sm text-muted-foreground mt-2 italic font-serif">
-                  {getLocalizedText(img.caption, locale)}
-                </p>
-              )}
-            </div>
-          ))}
+          {c.images.map((img, i) => {
+            // Identify themed SVG photo by seed in URL (avoids random picsum)
+            const kindMatch = img.src.match(/seed\/([\w-]+)/);
+            const kind = kindMatch ? kindMatch[1] : undefined;
+            return (
+              <div key={i}>
+                <EvidencePhoto
+                  kind={kind}
+                  className="w-full aspect-video rounded-lg border border-border"
+                />
+                {img.caption && (
+                  <p className="text-sm text-muted-foreground mt-2 italic font-serif">
+                    {getLocalizedText(img.caption, locale)}
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       );
     }
