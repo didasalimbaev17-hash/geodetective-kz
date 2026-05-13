@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/ui/safe-image";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText, xpForLevel } from "@/lib/utils";
-import { ArrowRight, Clock, Star, Trophy, Sparkles, Flame } from "lucide-react";
+import { ArrowRight, Clock, Star, Trophy, Sparkles, Flame, Target } from "lucide-react";
 
 export default async function StudentDashboard({
   params,
@@ -25,7 +25,6 @@ export default async function StudentDashboard({
 
   if (!realUser && isSupabaseConfigured) redirect("/auth/login");
 
-  // Demo profile when running without Supabase (e.g. fresh clone)
   const user = realUser ?? {
     id: "demo",
     email: "demo@geodetective.kz",
@@ -41,21 +40,31 @@ export default async function StudentDashboard({
   const xpProgress = Math.min(100, Math.round((user.xp / xpToNext) * 100));
 
   return (
-    <div className="container py-10">
-      {/* WELCOME + STATS */}
-      <div className="mb-10">
-        <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
-          {t("dashboard.welcome")},{" "}
+    <div className="container py-10 relative">
+      {/* Decorative bg */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -z-10" />
+      <div className="absolute top-40 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] -z-10" />
+
+      {/* WELCOME */}
+      <div className="mb-12">
+        <Badge variant="outline" className="mb-4 font-mono text-xs">
+          {locale === "ru" ? "Личный кабинет" : "Жеке кабинет"}
+        </Badge>
+        <h1 className="font-display text-4xl md:text-6xl font-bold mb-3 text-balance leading-tight">
+          {locale === "ru" ? "Привет, " : "Сәлем, "}
           <span className="gradient-text">
             {user.fullName ?? user.email.split("@")[0]}
           </span>
         </h1>
-        <p className="text-muted-foreground">
-          {t("dashboard.yourProgress")}
+        <p className="text-muted-foreground text-lg font-serif italic">
+          {locale === "ru"
+            ? "Выбери дело — и начни своё расследование."
+            : "Бір істі таңда — және тергеуді баста."}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      {/* STATS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
         <StatCard
           icon={Trophy}
           label={t("dashboard.currentLevel")}
@@ -64,7 +73,7 @@ export default async function StudentDashboard({
         />
         <StatCard
           icon={Sparkles}
-          label={t("dashboard.totalXP")}
+          label="XP"
           value={`${user.xp} / ${xpToNext}`}
           tone="secondary"
           progress={xpProgress}
@@ -76,73 +85,92 @@ export default async function StudentDashboard({
           tone="warning"
         />
         <StatCard
-          icon={Star}
+          icon={Target}
           label={t("dashboard.completedCases")}
           value={0}
           tone="success"
         />
       </div>
 
-      {/* CASES CATALOG */}
-      <div className="mb-6 flex items-end justify-between">
-        <h2 className="font-display text-2xl font-bold">
-          {t("nav.cases")}
-        </h2>
-        <Badge variant="outline" className="font-mono">
-          {scenarios.length} {t("dashboard.casesAvailable")}
-        </Badge>
+      {/* CASES */}
+      <div className="mb-8 flex items-end justify-between">
+        <div>
+          <Badge variant="outline" className="mb-3 font-mono text-xs">
+            {locale === "ru" ? "Каталог дел" : "Істер каталогы"}
+          </Badge>
+          <h2 className="font-display text-3xl md:text-4xl font-bold">
+            <span className="gradient-text">{t("nav.cases")}</span>
+          </h2>
+        </div>
+        <div className="font-mono text-xs text-muted-foreground">
+          {scenarios.length} {locale === "ru" ? "доступно" : "қолжетімді"}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {scenarios.map((s) => (
-          <Card key={s.id} className="detective-card group overflow-hidden">
-            <div className="relative aspect-[16/9] overflow-hidden bg-surface">
-              <SafeImage
-                src={s.coverImage ?? ""}
-                alt={getLocalizedText(s.title, locale)}
-                fallbackLabel={getLocalizedText(s.title, locale)}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-              <Badge className="absolute top-3 left-3 backdrop-blur-md bg-card/70">
-                {t("dashboard.startCase")}
-              </Badge>
-            </div>
-            <CardContent className="p-5">
-              <h3 className="font-display text-xl font-semibold mb-1">
-                {getLocalizedText(s.title, locale)}
-              </h3>
-              {s.subtitle && (
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                  {getLocalizedText(s.subtitle, locale)}
-                </p>
-              )}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-1">
+        {scenarios.map((s, idx) => (
+          <Link
+            key={s.id}
+            href={`/student/case/${s.id}` as never}
+            className="block group"
+          >
+            <Card className="detective-card overflow-hidden h-full">
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <SafeImage
+                  src={s.coverImage ?? ""}
+                  alt={getLocalizedText(s.title, locale)}
+                  fallbackLabel={getLocalizedText(s.title, locale)}
+                  fallbackHue={(idx * 67 + 10) % 360}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
+
+                {/* Top badges */}
+                <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-card/80 backdrop-blur-md border border-border/60">
+                  <span className="font-mono text-xs text-primary">
+                    #{String(idx + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <div className="absolute top-3 right-3 flex items-center gap-0.5 px-2.5 py-1 rounded-full bg-card/80 backdrop-blur-md border border-border/60">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
                       className={
                         i < s.difficulty
-                          ? "size-3.5 fill-primary text-primary"
-                          : "size-3.5 text-muted"
+                          ? "size-2.5 fill-primary text-primary"
+                          : "size-2.5 text-muted-foreground/30"
                       }
                     />
                   ))}
                 </div>
-                <span className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
-                  <Clock className="size-3.5" />
-                  {s.estimatedMinutes} {t("dashboard.minutes")}
-                </span>
+
+                {/* Bottom: action hint */}
+                <div className="absolute bottom-3 right-3 size-10 rounded-full bg-primary/20 backdrop-blur-md border border-primary/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:bottom-4 transition-all duration-300">
+                  <ArrowRight className="size-5 text-primary" />
+                </div>
               </div>
-              <Button asChild className="w-full group/btn">
-                <Link href={`/student/case/${s.id}` as never}>
-                  {t("dashboard.startCase")}
-                  <ArrowRight className="size-4 group-hover/btn:translate-x-0.5 transition-transform" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+              <CardContent className="p-5">
+                <h3 className="font-display text-xl font-bold mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                  {getLocalizedText(s.title, locale)}
+                </h3>
+                {s.subtitle && (
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2 font-serif italic">
+                    {getLocalizedText(s.subtitle, locale)}
+                  </p>
+                )}
+                <div className="flex items-center justify-between pt-3 border-t border-border/40">
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
+                    <Clock className="size-3.5" />
+                    {s.estimatedMinutes} {locale === "ru" ? "мин" : "мин"}
+                  </span>
+                  <Button size="sm" className="gap-1.5 h-8 text-xs">
+                    {t("dashboard.startCase")}
+                    <ArrowRight className="size-3" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>
@@ -162,25 +190,55 @@ function StatCard({
   tone: "primary" | "secondary" | "warning" | "success";
   progress?: number;
 }) {
-  const toneClasses = {
-    primary: "from-primary/20 to-primary/5 border-primary/30 text-primary",
-    secondary: "from-secondary/20 to-secondary/5 border-secondary/30 text-secondary",
-    warning: "from-warning/20 to-warning/5 border-warning/30 text-warning",
-    success: "from-success/20 to-success/5 border-success/30 text-success",
+  const toneStyles = {
+    primary: {
+      bg: "from-primary/20 via-primary/5 to-transparent",
+      border: "border-primary/30",
+      iconColor: "text-primary",
+      glow: "shadow-glow-primary",
+    },
+    secondary: {
+      bg: "from-secondary/20 via-secondary/5 to-transparent",
+      border: "border-secondary/30",
+      iconColor: "text-secondary",
+      glow: "shadow-glow-secondary",
+    },
+    warning: {
+      bg: "from-warning/20 via-warning/5 to-transparent",
+      border: "border-warning/30",
+      iconColor: "text-warning",
+      glow: "",
+    },
+    success: {
+      bg: "from-success/20 via-success/5 to-transparent",
+      border: "border-success/30",
+      iconColor: "text-success",
+      glow: "",
+    },
   };
 
+  const style = toneStyles[tone];
+
   return (
-    <Card className={`bg-gradient-to-br ${toneClasses[tone]} border`}>
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <Icon className="size-5" strokeWidth={1.5} />
+    <Card
+      className={`detective-card bg-gradient-to-br ${style.bg} ${style.border} relative overflow-hidden`}
+    >
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div
+            className={`size-10 rounded-xl bg-card/60 backdrop-blur flex items-center justify-center ${style.glow}`}
+          >
+            <Icon className={`size-5 ${style.iconColor}`} strokeWidth={1.5} />
+          </div>
         </div>
-        <div className="text-2xl font-bold font-numeric text-foreground">
+        <div className="text-3xl font-display font-bold font-numeric text-foreground mb-1">
           {value}
         </div>
-        <div className="text-xs text-muted-foreground mt-1">{label}</div>
+        <div className="text-xs text-muted-foreground uppercase tracking-wider">
+          {label}
+        </div>
         {progress !== undefined && (
-          <Progress value={progress} className="mt-2 h-1" />
+          <Progress value={progress} className="mt-3 h-1" />
         )}
       </CardContent>
     </Card>

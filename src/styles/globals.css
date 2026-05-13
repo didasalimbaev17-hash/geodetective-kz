@@ -5,45 +5,45 @@
 @layer base {
   :root {
     /* Light mode (рабочая «пергаментная» область) */
-    --background: 40 33% 94%;        /* #F5F1E8 пергамент */
-    --foreground: 40 12% 14%;         /* #2B2920 */
-    --card: 40 30% 97%;
-    --card-foreground: 40 12% 14%;
-    --surface: 40 25% 90%;
-    --surface-light: 40 33% 94%;
-    --primary: 38 78% 57%;            /* #E8A93C янтарь */
-    --primary-foreground: 40 12% 14%;
-    --secondary: 193 56% 51%;         /* #3DA9C9 циан */
+    --background: 40 30% 96%;
+    --foreground: 215 25% 12%;
+    --card: 40 28% 98%;
+    --card-foreground: 215 25% 12%;
+    --surface: 40 22% 92%;
+    --surface-light: 40 30% 96%;
+    --primary: 38 82% 55%;
+    --primary-foreground: 215 25% 8%;
+    --secondary: 193 65% 48%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 40 15% 82%;
-    --muted-foreground: 40 10% 38%;
-    --success: 138 32% 48%;           /* #52A66D */
-    --warning: 19 71% 56%;            /* #E07A3B */
-    --danger: 5 51% 50%;              /* #C0463C */
+    --muted: 40 15% 84%;
+    --muted-foreground: 215 12% 38%;
+    --success: 142 45% 42%;
+    --warning: 22 75% 52%;
+    --danger: 358 65% 52%;
     --border: 40 18% 78%;
-    --ring: 38 78% 57%;
-    --radius: 0.625rem;
+    --ring: 38 82% 55%;
+    --radius: 0.875rem;
   }
 
   .dark {
-    /* Dark mode (детективный hub) */
-    --background: 215 18% 7%;         /* #0E1116 */
-    --foreground: 45 30% 90%;         /* #F0EAD6 */
-    --card: 215 18% 11%;              /* #171B22 */
-    --card-foreground: 45 30% 90%;
-    --surface: 215 18% 11%;
-    --surface-light: 215 14% 17%;
-    --primary: 38 78% 57%;            /* #E8A93C янтарь */
-    --primary-foreground: 215 18% 7%;
-    --secondary: 193 56% 51%;         /* #3DA9C9 циан */
-    --secondary-foreground: 215 18% 7%;
-    --muted: 215 12% 22%;
-    --muted-foreground: 45 10% 65%;
-    --success: 138 32% 48%;
-    --warning: 19 71% 56%;
-    --danger: 5 51% 50%;
-    --border: 215 14% 20%;
-    --ring: 38 78% 57%;
+    /* Глубокий детективный hub — синий уголь, не чёрный */
+    --background: 220 28% 6%;
+    --foreground: 45 32% 92%;
+    --card: 220 24% 10%;
+    --card-foreground: 45 32% 92%;
+    --surface: 220 22% 13%;
+    --surface-light: 220 18% 17%;
+    --primary: 38 88% 60%;            /* янтарь чуть ярче */
+    --primary-foreground: 220 28% 6%;
+    --secondary: 193 70% 55%;         /* циан насыщеннее */
+    --secondary-foreground: 220 28% 6%;
+    --muted: 220 16% 22%;
+    --muted-foreground: 45 12% 68%;
+    --success: 142 52% 50%;
+    --warning: 22 88% 58%;
+    --danger: 358 72% 58%;
+    --border: 220 18% 20%;
+    --ring: 38 88% 60%;
   }
 
   * {
@@ -57,39 +57,84 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% -20%, hsl(38 88% 60% / 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 100% 80%, hsl(193 70% 55% / 0.06), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 0% 100%, hsl(358 72% 58% / 0.04), transparent 60%);
+    background-attachment: fixed;
   }
 
-  /* Поддержка казахских диакритик */
   :lang(kk) {
     font-feature-settings: "kern" 1, "liga" 1;
   }
 
-  /* Скроллбары в тёмной теме */
   .dark ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
   .dark ::-webkit-scrollbar-track {
-    @apply bg-surface;
+    @apply bg-background;
   }
   .dark ::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full;
+    background: linear-gradient(180deg, hsl(var(--muted)), hsl(var(--surface)));
+    border-radius: 6px;
+    border: 2px solid hsl(var(--background));
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground;
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.6), hsl(var(--muted)));
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+    color: hsl(var(--foreground));
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-card/80 backdrop-blur-md border border-border/60 rounded-xl;
+    @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-2xl;
+    box-shadow:
+      inset 0 1px 0 hsl(var(--foreground) / 0.04),
+      0 8px 32px hsl(220 28% 2% / 0.4);
   }
 
   .detective-card {
-    @apply relative bg-card border border-border rounded-xl shadow-lg;
+    @apply relative bg-card border border-border/60 rounded-2xl overflow-hidden;
     background-image:
-      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--surface)) 100%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--surface)) 100%);
+    box-shadow:
+      inset 0 1px 0 hsl(var(--foreground) / 0.05),
+      0 1px 2px hsl(220 28% 2% / 0.3),
+      0 8px 24px hsl(220 28% 2% / 0.25);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .detective-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.3) 0%, transparent 40%, transparent 60%, hsl(var(--secondary) / 0.2) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .detective-card:hover::before {
+    opacity: 1;
+  }
+
+  .detective-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 0 hsl(var(--foreground) / 0.08),
+      0 1px 2px hsl(220 28% 2% / 0.4),
+      0 16px 48px hsl(220 28% 2% / 0.45),
+      0 0 0 1px hsl(var(--primary) / 0.15);
   }
 
   .scan-effect {
@@ -97,8 +142,10 @@
   }
   .scan-effect::before {
     content: "";
-    @apply absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent;
-    @apply animate-scan-line opacity-60 pointer-events-none;
+    @apply absolute inset-x-0 h-px;
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary) / 0.6) 50%, transparent 100%);
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.6);
+    @apply animate-scan-line pointer-events-none;
   }
 
   .text-balance {
@@ -108,6 +155,55 @@
   .evidence-pin {
     @apply absolute w-3 h-3 rounded-full bg-danger shadow-md;
     @apply ring-2 ring-danger/40;
+    box-shadow: 0 0 12px hsl(var(--danger) / 0.6);
+  }
+
+  .glow-primary {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.3),
+      0 0 24px hsl(var(--primary) / 0.4),
+      0 0 64px hsl(var(--primary) / 0.2);
+  }
+
+  .glow-secondary {
+    box-shadow:
+      0 0 0 1px hsl(var(--secondary) / 0.3),
+      0 0 24px hsl(var(--secondary) / 0.4),
+      0 0 64px hsl(var(--secondary) / 0.2);
+  }
+
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent 80%);
+  }
+
+  .stamp {
+    @apply inline-flex items-center justify-center font-display font-bold uppercase tracking-widest;
+    @apply px-3 py-1 border-2 border-current rounded text-xs;
+    transform: rotate(-3deg);
+  }
+
+  .compass-decor {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='45' fill='none' stroke='%23E8A93C' stroke-width='0.5' stroke-opacity='0.3'/%3E%3Ccircle cx='50' cy='50' r='35' fill='none' stroke='%23E8A93C' stroke-width='0.3' stroke-opacity='0.2'/%3E%3Cpath d='M50 5 L52 50 L50 95 L48 50 Z' fill='%23E8A93C' fill-opacity='0.2'/%3E%3Cpath d='M5 50 L50 48 L95 50 L50 52 Z' fill='%23E8A93C' fill-opacity='0.1'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 
@@ -117,9 +213,56 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary via-primary to-secondary;
+    @apply bg-gradient-to-br from-primary via-primary/90 to-secondary;
     @apply bg-clip-text text-transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
   }
+
+  .gradient-border {
+    position: relative;
+    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+      linear-gradient(135deg, hsl(var(--primary) / 0.4), hsl(var(--secondary) / 0.4)) border-box;
+    border: 1px solid transparent;
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 0 32px hsl(var(--primary) / 0.4);
+  }
+
+  .shadow-glow-secondary {
+    box-shadow: 0 0 32px hsl(var(--secondary) / 0.4);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      hsl(var(--primary) / 0.15) 50%,
+      transparent 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* Leaflet тёмная тема */
