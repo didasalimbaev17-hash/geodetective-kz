@@ -39,7 +39,12 @@ export function BriefingStep({
             <div className="size-2 rounded-full bg-primary animate-pulse-glow" />
             <FileWarning className="size-4" />
             <span>
-              {scenario.briefing.narrator ?? t("narrator")}
+              {(() => {
+                const n = scenario.briefing.narrator;
+                if (!n) return t("narrator");
+                if (typeof n === "string") return n;
+                return getLocalizedText(n, locale);
+              })()}
             </span>
           </div>
 

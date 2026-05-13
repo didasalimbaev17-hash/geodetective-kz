@@ -224,7 +224,7 @@ export const scenarioSchema = z.object({
   }),
 
   briefing: z.object({
-    narrator: z.string().optional(),
+    narrator: z.union([z.string(), localizedText]).optional(),
     intro: localizedText,
     backgroundImage: z.string().optional(),
   }),

@@ -1,14 +1,17 @@
 import "@/styles/globals.css";
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { Manrope, JetBrains_Mono, Source_Serif_4, Noto_Sans } from "next/font/google";
 
-const inter = Inter({
+// Noto Sans — лучшая поддержка казахских диакритик (Ұ, Қ, Ң, Ғ, Ү, Ө, І, Һ, Ә)
+const notoSans = Noto_Sans({
   subsets: ["latin", "cyrillic", "cyrillic-ext"],
   variable: "--font-inter",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
-const interDisplay = Inter({
+// Manrope — для display-заголовков, отлично читает казахский
+const manrope = Manrope({
   subsets: ["latin", "cyrillic", "cyrillic-ext"],
   variable: "--font-inter-display",
   display: "swap",
@@ -47,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="kk"
-      className={`${inter.variable} ${interDisplay.variable} ${sourceSerif.variable} ${jetbrains.variable} dark`}
+      className={`${notoSans.variable} ${manrope.variable} ${sourceSerif.variable} ${jetbrains.variable} dark`}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground font-sans">
