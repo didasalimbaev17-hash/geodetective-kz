@@ -4,10 +4,19 @@ import * as React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Compass, Languages, LogIn, UserCircle } from "lucide-react";
+import { UserMenu } from "./UserMenu";
+import { Compass, Languages, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function Header({ user }: { user?: { email: string; role: string } | null }) {
+export function Header({
+  user,
+}: {
+  user?: {
+    email: string;
+    role: string;
+    fullName?: string | null;
+  } | null;
+}) {
   const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
@@ -64,23 +73,7 @@ export function Header({ user }: { user?: { email: string; role: string } | null
           </button>
 
           {user ? (
-            <Button asChild variant="ghost" size="sm" className="gap-1.5">
-              <Link
-                href={
-                  user.role === "teacher"
-                    ? "/teacher/dashboard"
-                    : "/student/dashboard"
-                }
-              >
-                <div className="relative">
-                  <UserCircle className="size-5 text-primary" />
-                  <div className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-success ring-2 ring-background" />
-                </div>
-                <span className="hidden sm:inline text-sm">
-                  {user.email.split("@")[0]}
-                </span>
-              </Link>
-            </Button>
+            <UserMenu user={user} />
           ) : (
             <Button asChild size="sm" className="gap-1.5 shadow-glow-primary">
               <Link href="/auth/login">
