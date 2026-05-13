@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode (рабочая «пергаментная» область) */
+    --background: 40 33% 94%;        /* #F5F1E8 пергамент */
+    --foreground: 40 12% 14%;         /* #2B2920 */
+    --card: 40 30% 97%;
+    --card-foreground: 40 12% 14%;
+    --surface: 40 25% 90%;
+    --surface-light: 40 33% 94%;
+    --primary: 38 78% 57%;            /* #E8A93C янтарь */
+    --primary-foreground: 40 12% 14%;
+    --secondary: 193 56% 51%;         /* #3DA9C9 циан */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 15% 82%;
+    --muted-foreground: 40 10% 38%;
+    --success: 138 32% 48%;           /* #52A66D */
+    --warning: 19 71% 56%;            /* #E07A3B */
+    --danger: 5 51% 50%;              /* #C0463C */
+    --border: 40 18% 78%;
+    --ring: 38 78% 57%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Dark mode (детективный hub) */
+    --background: 215 18% 7%;         /* #0E1116 */
+    --foreground: 45 30% 90%;         /* #F0EAD6 */
+    --card: 215 18% 11%;              /* #171B22 */
+    --card-foreground: 45 30% 90%;
+    --surface: 215 18% 11%;
+    --surface-light: 215 14% 17%;
+    --primary: 38 78% 57%;            /* #E8A93C янтарь */
+    --primary-foreground: 215 18% 7%;
+    --secondary: 193 56% 51%;         /* #3DA9C9 циан */
+    --secondary-foreground: 215 18% 7%;
+    --muted: 215 12% 22%;
+    --muted-foreground: 45 10% 65%;
+    --success: 138 32% 48%;
+    --warning: 19 71% 56%;
+    --danger: 5 51% 50%;
+    --border: 215 14% 20%;
+    --ring: 38 78% 57%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+
+  /* Поддержка казахских диакритик */
+  :lang(kk) {
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Скроллбары в тёмной теме */
+  .dark ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-surface;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-card/80 backdrop-blur-md border border-border/60 rounded-xl;
+  }
+
+  .detective-card {
+    @apply relative bg-card border border-border rounded-xl shadow-lg;
+    background-image:
+      linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--surface)) 100%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+
+  .scan-effect {
+    @apply relative overflow-hidden;
+  }
+  .scan-effect::before {
+    content: "";
+    @apply absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent;
+    @apply animate-scan-line opacity-60 pointer-events-none;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .evidence-pin {
+    @apply absolute w-3 h-3 rounded-full bg-danger shadow-md;
+    @apply ring-2 ring-danger/40;
+  }
+}
+
+@layer utilities {
+  .font-numeric {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-primary to-secondary;
+    @apply bg-clip-text text-transparent;
+  }
+}
+
+/* Leaflet тёмная тема */
+.dark .leaflet-container {
+  background: hsl(var(--background));
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: hsl(var(--card) / 0.7) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
