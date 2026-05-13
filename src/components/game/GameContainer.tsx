@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMachine } from "@xstate/react";
 import { useTranslations } from "next-intl";
 import type { Scenario } from "@/schemas/case.schema";
@@ -16,12 +16,74 @@ import { DebriefStep } from "./DebriefStep";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
+const STORAGE_KEY_PREFIX = "geodet-case-";
+
 export function GameContainer({ scenario }: { scenario: Scenario }) {
   const machine = useMemo(() => createCaseMachine(scenario), [scenario]);
-  const [state, send] = useMachine(machine);
+  const storageKey = `${STORAGE_KEY_PREFIX}${scenario.id}`;
+
+  // Load persisted state from sessionStorage
+  const [initialSnapshot, setInitialSnapshot] = useState<unknown>(undefined);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.value && parsed.value !== "completed") {
+          // Restore Set from array (sessionStorage flattened it)
+          if (parsed.context?.evidenceViewed && Array.isArray(parsed.context.evidenceViewed)) {
+            parsed.context.evidenceViewed = new Set(parsed.context.evidenceViewed);
+          }
+          parsed.context.scenario = scenario;
+          setInitialSnapshot(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+    setHydrated(true);
+  }, [storageKey, scenario]);
+
+  const [state, send] = useMachine(machine, {
+    snapshot: hydrated ? (initialSnapshot as never) : undefined,
+  });
   const t = useTranslations();
 
+  // Persist state on every change
+  useEffect(() => {
+    if (!hydrated || typeof window === "undefined") return;
+    try {
+      const snapshot = {
+        value: state.value,
+        context: {
+          ...state.context,
+          // Convert Set → Array for JSON
+          evidenceViewed: [...state.context.evidenceViewed],
+          // Don't save the full scenario object (too big, restored from props)
+          scenario: undefined,
+        },
+      };
+      sessionStorage.setItem(storageKey, JSON.stringify(snapshot));
+      if (state.value === "completed") {
+        sessionStorage.removeItem(storageKey);
+      }
+    } catch {
+      // ignore (quota exceeded, etc.)
+    }
+  }, [state, storageKey, hydrated]);
+
   const stage = state.value as string;
+
+  if (!hydrated) {
+    return (
+      <div className="container py-20 text-center">
+        <Loader2 className="size-12 text-primary animate-spin mx-auto" />
+      </div>
+    );
+  }
 
   return (
     <div className="container py-6 md:py-10">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { Scenario } from "@/schemas/case.schema";
 import type { AiGradingResponse } from "@/schemas/ai.schema";
@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { gradeEssayAction } from "@/server/actions/grade";
 import { countWords, getLocalizedText } from "@/lib/utils";
-import { Loader2, Send, Sparkles } from "lucide-react";
+import { Loader2, Send, Sparkles, AlertCircle } from "lucide-react";
 
 export function ExplanationStep({
   scenario,
@@ -28,7 +27,7 @@ export function ExplanationStep({
   const t = useTranslations("game.explanation");
   const locale = useLocale();
   const [text, setText] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const wordCount = countWords(text);
@@ -36,22 +35,39 @@ export function ExplanationStep({
   const maxWords = scenario.explanationTask.maxWords;
   const valid = wordCount >= minWords && wordCount <= maxWords;
 
-  function handleSubmit() {
+  async function handleSubmit() {
     setError(null);
-    startTransition(async () => {
-      const result = await gradeEssayAction({
-        scenarioId: scenario.id,
-        essayText: text,
-        chosenSolutionId,
-        investigationAnswers,
-        evidenceViewed,
+    setPending(true);
+    try {
+      const res = await fetch("/api/grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioId: scenario.id,
+          essayText: text,
+          chosenSolutionId,
+          investigationAnswers,
+          evidenceViewed,
+        }),
       });
-      if (result.ok) {
-        onGraded(result.grade);
-      } else {
-        setError(result.error);
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `HTTP ${res.status}`);
       }
-    });
+
+      const json = (await res.json()) as { grade: AiGradingResponse };
+      if (!json.grade) throw new Error("No grade in response");
+      onGraded(json.grade);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(
+        locale === "ru"
+          ? `Ошибка: ${msg}. Попробуйте ещё раз.`
+          : `Қате: ${msg}. Қайта көріңіз.`
+      );
+      setPending(false);
+    }
   }
 
   return (
@@ -105,20 +121,21 @@ export function ExplanationStep({
           {pending && (
             <div className="mt-4 p-4 bg-primary/10 border border-primary/30 rounded-md flex items-center gap-3">
               <Sparkles className="size-5 text-primary animate-pulse" />
-              <span className="text-sm">{t("gradingInProgress")}</span>
-              <Loader2 className="size-4 animate-spin ml-auto" />
+              <span className="text-sm flex-1">{t("gradingInProgress")}</span>
+              <Loader2 className="size-4 animate-spin" />
             </div>
           )}
 
           {error && (
-            <div className="mt-4 p-3 bg-danger/10 border border-danger/20 rounded-md text-sm text-danger">
-              {error}
+            <div className="mt-4 p-3 bg-danger/10 border border-danger/30 rounded-md flex items-start gap-2 text-sm text-danger">
+              <AlertCircle className="size-4 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 
           <Button
             size="lg"
-            className="w-full mt-6 gap-2"
+            className="w-full mt-6 gap-2 shadow-glow-primary"
             disabled={!valid || pending}
             onClick={handleSubmit}
           >
@@ -129,6 +146,14 @@ export function ExplanationStep({
             )}
             {t("submitForGrading")}
           </Button>
+
+          {pending && (
+            <p className="mt-3 text-xs text-muted-foreground text-center">
+              {locale === "ru"
+                ? "Это может занять до 30 секунд..."
+                : "Бұл 30 секундқа дейін уақыт алуы мүмкін..."}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

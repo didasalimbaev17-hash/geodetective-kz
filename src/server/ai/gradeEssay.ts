@@ -92,7 +92,9 @@ async function gradeWithClaude(
   injection: boolean
 ): Promise<AiGradingResponse> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-  const model = process.env.ANTHROPIC_GRADING_MODEL ?? "claude-sonnet-4-6";
+  // Default to Haiku 4.5 — much faster (3-5s) than Sonnet (15-20s) which times out on Vercel Hobby.
+  // Override with ANTHROPIC_GRADING_MODEL env var if you want Sonnet quality.
+  const model = process.env.ANTHROPIC_GRADING_MODEL ?? "claude-haiku-4-5";
 
   const response = await client.messages.create({
     model,
