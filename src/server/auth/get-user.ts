@@ -1,4 +1,8 @@
-import { createSupabaseServerClient, getSessionUser } from "./supabase-server";
+import {
+  createSupabaseServerClient,
+  getSessionUser,
+  isSupabaseConfigured,
+} from "./supabase-server";
 
 export type CurrentUser = {
   id: string;
@@ -12,9 +16,11 @@ export type CurrentUser = {
 
 /**
  * Returns the currently signed-in user with profile data.
- * Returns null if not signed in OR if Supabase isn't configured yet (dev).
+ * Returns null if not signed in OR if Supabase isn't configured.
  */
 export async function getCurrentUserProfile(): Promise<CurrentUser> {
+  if (!isSupabaseConfigured()) return null;
+
   try {
     const authUser = await getSessionUser();
     if (!authUser) return null;
@@ -27,7 +33,6 @@ export async function getCurrentUserProfile(): Promise<CurrentUser> {
       .maybeSingle();
 
     if (!profile) {
-      // Auth exists but no profile row — return shadow profile
       return {
         id: authUser.id,
         email: authUser.email ?? "",
@@ -48,7 +53,8 @@ export async function getCurrentUserProfile(): Promise<CurrentUser> {
       xp: profile.xp ?? 0,
       level: profile.level ?? 1,
     };
-  } catch {
+  } catch (err) {
+    console.error("[getCurrentUserProfile]", err);
     return null;
   }
 }

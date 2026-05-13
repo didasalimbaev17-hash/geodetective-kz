@@ -3,7 +3,20 @@ import { cookies } from "next/headers";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
+export function isSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
 export async function createSupabaseServerClient() {
+  if (!isSupabaseConfigured()) {
+    throw new Error(
+      "Supabase env vars missing — running in demo mode without auth"
+    );
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(
@@ -29,9 +42,14 @@ export async function createSupabaseServerClient() {
 }
 
 export async function getSessionUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  if (!isSupabaseConfigured()) return null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
+  } catch {
+    return null;
+  }
 }
