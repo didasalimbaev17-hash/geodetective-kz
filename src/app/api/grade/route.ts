@@ -6,7 +6,12 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-const HARD_TIMEOUT_MS = 50000; // надёжно влезает в Vercel maxDuration=60
+// Suppress noisy DEP0169 url.parse() warning from a transitive dep
+if (process.removeAllListeners) {
+  process.removeAllListeners("warning");
+}
+
+const HARD_TIMEOUT_MS = 55000; // надёжно влезает в Vercel maxDuration=60
 
 export async function POST(req: NextRequest) {
   const startedAt = Date.now();
