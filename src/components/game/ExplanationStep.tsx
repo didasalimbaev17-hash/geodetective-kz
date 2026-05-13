@@ -38,6 +38,11 @@ export function ExplanationStep({
   async function handleSubmit() {
     setError(null);
     setPending(true);
+
+    // Client-side hard timeout 55s (server has 50s, this is a safety net)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000);
+
     try {
       const res = await fetch("/api/grade", {
         method: "POST",
@@ -49,7 +54,10 @@ export function ExplanationStep({
           investigationAnswers,
           evidenceViewed,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -60,7 +68,15 @@ export function ExplanationStep({
       if (!json.grade) throw new Error("No grade in response");
       onGraded(json.grade);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unknown error";
+      clearTimeout(timeoutId);
+      const isAbort =
+        err instanceof DOMException && err.name === "AbortError";
+      const msg = isAbort
+        ? "Превышено время ожидания (55с). Проверьте Vercel logs."
+        : err instanceof Error
+          ? err.message
+          : "Unknown error";
+      console.error("[grade fetch]", err);
       setError(
         locale === "ru"
           ? `Ошибка: ${msg}. Попробуйте ещё раз.`
