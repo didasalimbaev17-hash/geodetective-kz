@@ -150,6 +150,7 @@ export function EvidenceStep({
           evidence={openEvidence}
           onClose={() => setOpenEvidence(null)}
           locale={locale}
+          scenarioId={scenario.id}
         />
       )}
     </div>
@@ -160,10 +161,12 @@ function EvidenceModal({
   evidence,
   onClose,
   locale,
+  scenarioId,
 }: {
   evidence: Evidence;
   onClose: () => void;
   locale: string;
+  scenarioId: string;
 }) {
   return (
     <div
@@ -183,7 +186,7 @@ function EvidenceModal({
               <X className="size-4" />
             </Button>
           </div>
-          <EvidenceContent evidence={evidence} locale={locale} />
+          <EvidenceContent evidence={evidence} locale={locale} scenarioId={scenarioId} />
         </CardContent>
       </Card>
     </div>
@@ -193,9 +196,11 @@ function EvidenceModal({
 function EvidenceContent({
   evidence,
   locale,
+  scenarioId,
 }: {
   evidence: Evidence;
   locale: string;
+  scenarioId: string;
 }) {
   switch (evidence.type) {
     case "satellite_compare": {
@@ -209,7 +214,7 @@ function EvidenceContent({
               </div>
               <SatelliteFrame
                 year={c.before.year}
-                theme="lake-shrinking"
+                scenarioId={scenarioId}
                 state="before"
                 className="w-full aspect-square border border-border"
               />
@@ -220,7 +225,7 @@ function EvidenceContent({
               </div>
               <SatelliteFrame
                 year={c.after.year}
-                theme="lake-shrinking"
+                scenarioId={scenarioId}
                 state="after"
                 className="w-full aspect-square border border-border"
               />
