@@ -116,18 +116,17 @@ export function AddStudentDialog({
 
                 {!loading && filtered.length === 0 && (
                   <div className="text-center py-8 text-sm text-muted-foreground">
-                    {grade
-                      ? locale === "ru"
-                        ? `Нет доступных учеников ${grade} класса`
-                        : `${grade} сыныптың қол жетімді оқушылары жоқ`
-                      : locale === "ru"
-                        ? "Нет доступных учеников"
-                        : "Қол жетімді оқушылар жоқ"}
+                    {locale === "ru"
+                      ? "Нет доступных учеников"
+                      : "Қол жетімді оқушылар жоқ"}
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  {filtered.map((s) => (
+                  {filtered.map((s) => {
+                    const mismatch = grade && s.grade && s.grade !== grade;
+                    const noGrade = !s.grade;
+                    return (
                     <div
                       key={s.id}
                       className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border/60 hover:border-border bg-card/40"
@@ -136,10 +135,24 @@ export function AddStudentDialog({
                         <div className="font-medium text-sm truncate flex items-center gap-2">
                           <User className="size-3.5 text-muted-foreground flex-shrink-0" />
                           {s.fullName ?? s.email.split("@")[0]}
-                          {s.grade && (
-                            <Badge variant="outline" className="text-xs">
+                          {s.grade ? (
+                            <Badge
+                              variant={mismatch ? "warning" : "outline"}
+                              className="text-xs"
+                            >
                               {s.grade}
                             </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs text-muted-foreground">
+                              {locale === "ru" ? "без класса" : "сыныпсыз"}
+                            </Badge>
+                          )}
+                          {(mismatch || noGrade) && grade && (
+                            <span className="text-xs text-warning">
+                              {locale === "ru"
+                                ? `≠ ${grade}`
+                                : `≠ ${grade}`}
+                            </span>
                           )}
                         </div>
                         <div className="text-xs text-muted-foreground truncate mt-0.5">
@@ -160,7 +173,8 @@ export function AddStudentDialog({
                         {t("common.save")}
                       </Button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </CardContent>

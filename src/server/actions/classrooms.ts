@@ -218,8 +218,12 @@ export async function getClassroomDetailsAction(
 
 export async function getAvailableStudentsAction(
   classroomId: string,
-  grade: Grade | null
+  _grade: Grade | null
 ): Promise<StudentRow[]> {
+  // Show ALL registered students regardless of their grade — teacher
+  // decides who fits. The student's grade is rendered as a badge in the
+  // UI list so the teacher can spot mismatches at a glance.
+  void _grade;
   try {
     const teacher = await assertTeacher();
     if (!teacher) return [];
@@ -233,9 +237,6 @@ export async function getAvailableStudentsAction(
     const existingIds = existingMembers.map((m) => m.id);
 
     const conditions = [eq(profiles.role, "student")];
-    if (grade) {
-      conditions.push(eq(profiles.grade, grade));
-    }
     if (existingIds.length > 0) {
       conditions.push(notInArray(profiles.id, existingIds));
     }
