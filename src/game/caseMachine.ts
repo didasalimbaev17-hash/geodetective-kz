@@ -3,7 +3,7 @@ import type { Scenario } from "@/schemas/case.schema";
 
 export type CaseContext = {
   scenario: Scenario;
-  evidenceViewed: Set<string>;
+  evidenceViewed: string[];
   investigationAnswers: Record<string, number | number[]>;
   chosenSolutionId: string | null;
   explanationText: string;
@@ -109,9 +109,9 @@ export const createCaseMachine = (scenario: Scenario) =>
       markEvidenceViewed: assign({
         evidenceViewed: ({ context, event }) => {
           if (event.type !== "VIEW_EVIDENCE") return context.evidenceViewed;
-          const next = new Set(context.evidenceViewed);
-          next.add(event.evidenceId);
-          return next;
+          if (context.evidenceViewed.includes(event.evidenceId))
+            return context.evidenceViewed;
+          return [...context.evidenceViewed, event.evidenceId];
         },
       }),
       saveInvestigationAnswers: assign({
@@ -164,7 +164,7 @@ export const createCaseMachine = (scenario: Scenario) =>
       enoughEvidenceViewed: ({ context }) => {
         const required = context.scenario.evidence.filter((e) => e.required);
         const requiredIds = new Set(required.map((e) => e.id));
-        const viewedRequired = [...context.evidenceViewed].filter((id) =>
+        const viewedRequired = context.evidenceViewed.filter((id) =>
           requiredIds.has(id)
         ).length;
         const ratio = required.length === 0 ? 1 : viewedRequired / required.length;
@@ -176,7 +176,7 @@ export const createCaseMachine = (scenario: Scenario) =>
     initial: "briefing",
     context: {
       scenario,
-      evidenceViewed: new Set<string>(),
+      evidenceViewed: [],
       investigationAnswers: {},
       chosenSolutionId: null,
       explanationText: "",
