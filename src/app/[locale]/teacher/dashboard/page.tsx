@@ -1,11 +1,12 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { getCurrentUserProfile } from "@/server/auth/get-user";
+import { getMyClassroomsAction } from "@/server/actions/classrooms";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
-import { Plus, Users, FileCheck2, GraduationCap, BookOpen } from "lucide-react";
+import { CreateClassroomForm } from "@/components/teacher/CreateClassroomForm";
+import { Users, BookOpen, GraduationCap, ArrowRight } from "lucide-react";
 
 export default async function TeacherDashboard({
   params,
@@ -22,9 +23,12 @@ export default async function TeacherDashboard({
     redirect("/student/dashboard");
   }
 
+  const classrooms = await getMyClassroomsAction();
+  const totalStudents = classrooms.reduce((s, c) => s + c.studentCount, 0);
+
   return (
     <div className="container py-10">
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-1">
             <span className="gradient-text">
@@ -36,17 +40,14 @@ export default async function TeacherDashboard({
             {t("auth.roleTeacher")}
           </p>
         </div>
-        <Button className="gap-2">
-          <Plus className="size-4" />
-          {t("teacher.createClass")}
-        </Button>
+        <CreateClassroomForm triggerLabel={t("teacher.createClass")} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <Card>
           <CardContent className="p-6">
             <Users className="size-5 text-primary mb-2" />
-            <div className="text-3xl font-bold font-numeric">0</div>
+            <div className="text-3xl font-bold font-numeric">{totalStudents}</div>
             <div className="text-sm text-muted-foreground">
               {t("teacher.students")}
             </div>
@@ -55,18 +56,11 @@ export default async function TeacherDashboard({
         <Card>
           <CardContent className="p-6">
             <BookOpen className="size-5 text-secondary mb-2" />
-            <div className="text-3xl font-bold font-numeric">0</div>
+            <div className="text-3xl font-bold font-numeric">
+              {classrooms.length}
+            </div>
             <div className="text-sm text-muted-foreground">
               {t("teacher.classesTitle")}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <FileCheck2 className="size-5 text-warning mb-2" />
-            <div className="text-3xl font-bold font-numeric">0</div>
-            <div className="text-sm text-muted-foreground">
-              {t("teacher.pendingReviews")}
             </div>
           </CardContent>
         </Card>
@@ -77,51 +71,61 @@ export default async function TeacherDashboard({
           <CardTitle>{t("teacher.classesTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <BookOpen className="size-12 mx-auto mb-3 opacity-30" />
-            <p className="mb-4">{locale === "ru" ? "У вас ещё нет классов" : "Сізде әлі сыныптар жоқ"}</p>
-            <Button variant="outline" className="gap-2">
-              <Plus className="size-4" />
-              {t("teacher.createClass")}
-            </Button>
-          </div>
+          {classrooms.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <BookOpen className="size-12 mx-auto mb-3 opacity-30" />
+              <p>
+                {locale === "ru"
+                  ? "У вас ещё нет классов"
+                  : "Сізде әлі сыныптар жоқ"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {classrooms.map((c) => (
+                <Link
+                  key={c.id}
+                  href={`/teacher/class/${c.id}` as never}
+                  className="block group"
+                >
+                  <Card className="detective-card hover:border-primary/40 transition-all h-full">
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="min-w-0">
+                          <h3 className="font-display text-lg font-bold mb-1 group-hover:text-primary transition-colors line-clamp-1">
+                            {c.name}
+                          </h3>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {c.grade && (
+                              <Badge variant="outline" className="text-xs gap-1">
+                                <GraduationCap className="size-3" />
+                                {c.grade === "10"
+                                  ? t("auth.grade10")
+                                  : t("auth.grade11")}
+                              </Badge>
+                            )}
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {c.code}
+                            </span>
+                          </div>
+                        </div>
+                        <ArrowRight className="size-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+                      </div>
+                      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                        <Users className="size-3.5" />
+                        <span>
+                          {c.studentCount}{" "}
+                          {locale === "ru" ? "учеников" : "оқушы"}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      <div className="mt-8 grid md:grid-cols-2 gap-4">
-        <Card className="detective-card">
-          <CardHeader>
-            <CardTitle className="text-lg">{locale === "ru" ? "Каталог кейсов" : "Кейстер каталогы"}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              {locale === "ru"
-                ? "Просмотрите все доступные кейсы и назначьте классу."
-                : "Барлық қолжетімді кейстерді қараңыз және сыныпқа тағайындаңыз."}
-            </p>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/student/dashboard">{locale === "ru" ? "Посмотреть кейсы" : "Кейстерді көру"}</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        <Card className="detective-card">
-          <CardHeader>
-            <CardTitle className="text-lg">{locale === "ru" ? "Новый кейс" : "Жаңа кейс"}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              {locale === "ru"
-                ? "Создайте свой кейс через конструктор. Будет доступно скоро."
-                : "Өз кейсіңізді конструктор арқылы жасаңыз. Жақында қолжетімді болады."}
-            </p>
-            <Button variant="outline" className="w-full" disabled>
-              <Badge variant="outline" className="text-xs">
-                {locale === "ru" ? "Скоро" : "Жақында"}
-              </Badge>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

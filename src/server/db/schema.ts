@@ -63,6 +63,7 @@ export const classrooms = pgTable("classrooms", {
   name: text("name").notNull(),
   code: text("code").notNull().unique(), // 6-character join code
   description: text("description"),
+  grade: text("grade"), // "10" | "11" — определяет какие кейсы у класса
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
