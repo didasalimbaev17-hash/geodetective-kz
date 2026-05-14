@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { signOutAction } from "@/server/actions/auth";
 import { Button } from "@/components/ui/button";
+import { GradePicker } from "@/components/student/GradePicker";
 import { Trophy, Sparkles, LogOut, GraduationCap } from "lucide-react";
 
 export default async function ProfilePage({
@@ -21,6 +22,10 @@ export default async function ProfilePage({
 
   return (
     <div className="container max-w-3xl py-10">
+      {user.role === "student" && !user.grade && (
+        <GradePicker currentGrade={user.grade} />
+      )}
+
       <Card className="detective-card mb-6">
         <CardHeader>
           <div className="flex items-start justify-between gap-4">

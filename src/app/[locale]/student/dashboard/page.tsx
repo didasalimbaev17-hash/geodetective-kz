@@ -90,9 +90,13 @@ export default async function StudentDashboard({
             : "Бір істі таңда — және тергеуді баста."}
         </p>
         {gradeMissing && (
-          <div className="mt-6 inline-flex items-center gap-2 text-sm bg-warning/10 text-warning border border-warning/30 px-4 py-2 rounded-lg">
+          <Link
+            href="/student/profile"
+            className="mt-6 inline-flex items-center gap-2 text-sm bg-warning/10 text-warning border border-warning/30 hover:bg-warning/20 px-4 py-2 rounded-lg transition-colors"
+          >
             {t("auth.gradeRequired")}
-          </div>
+            <ArrowRight className="size-3.5" />
+          </Link>
         )}
       </div>
 

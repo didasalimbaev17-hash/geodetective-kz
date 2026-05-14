@@ -117,6 +117,41 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
   }
 }
 
+export async function setGradeAction(
+  grade: "10" | "11"
+): Promise<{ ok: boolean; error?: string }> {
+  if (!isSupabaseConfigured()) {
+    return { ok: false, error: "supabase_not_configured" };
+  }
+  if (grade !== "10" && grade !== "11") {
+    return { ok: false, error: "invalid_grade" };
+  }
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { ok: false, error: "not_authenticated" };
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ grade })
+      .eq("id", user.id);
+
+    if (error) {
+      return { ok: false, error: error.message };
+    }
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (err) {
+    console.error("[setGradeAction]", err);
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "unknown",
+    };
+  }
+}
+
 export async function signOutAction() {
   if (!isSupabaseConfigured()) {
     redirect("/");
