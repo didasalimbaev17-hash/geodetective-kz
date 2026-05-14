@@ -48,7 +48,7 @@ export function EvidenceStep({
   onContinue,
 }: {
   scenario: Scenario;
-  viewed: Set<string>;
+  viewed: string[];
   onView: (id: string) => void;
   onContinue: () => void;
 }) {
@@ -57,7 +57,7 @@ export function EvidenceStep({
   const [openEvidence, setOpenEvidence] = useState<Evidence | null>(null);
 
   const required = scenario.evidence.filter((e) => e.required);
-  const viewedRequired = required.filter((e) => viewed.has(e.id)).length;
+  const viewedRequired = required.filter((e) => viewed.includes(e.id)).length;
   const requiredProgress =
     required.length === 0 ? 100 : (viewedRequired / required.length) * 100;
   const canContinue = requiredProgress >= 70;
@@ -85,7 +85,7 @@ export function EvidenceStep({
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium">
                 {t("viewedCount", {
-                  viewed: viewed.size,
+                  viewed: viewed.length,
                   total: scenario.evidence.length,
                 })}
               </span>
@@ -108,7 +108,7 @@ export function EvidenceStep({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {scenario.evidence.map((ev) => {
           const Icon = TYPE_ICONS[ev.type] ?? FileText;
-          const isViewed = viewed.has(ev.id);
+          const isViewed = viewed.includes(ev.id);
           return (
             <Card
               key={ev.id}

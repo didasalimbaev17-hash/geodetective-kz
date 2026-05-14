@@ -21,23 +21,56 @@ const STORAGE_KEY_PREFIX = "geodet-case-";
 export function GameContainerInner({ scenario }: { scenario: Scenario }) {
   const machine = useMemo(() => createCaseMachine(scenario), [scenario]);
   const storageKey = `${STORAGE_KEY_PREFIX}${scenario.id}`;
+  const snapshotKey = `${storageKey}-snapshot`;
 
-  // Start fresh — no snapshot restore for now
-  // (XState v5 snapshot persistence had compatibility issues; revisit later)
-  const [state, send] = useMachine(machine);
+  // Try to restore prior XState snapshot from sessionStorage so F5 (or
+  // locale switch which reloads the page) keeps the player on the same step.
+  // Always re-inject the latest scenario object — content might have changed
+  // since the snapshot was written.
+  const persistedSnapshot = useMemo(() => {
+    if (typeof window === "undefined") return undefined;
+    try {
+      const raw = sessionStorage.getItem(snapshotKey);
+      if (!raw) return undefined;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object") return undefined;
+      if (parsed.context && typeof parsed.context === "object") {
+        parsed.context.scenario = scenario;
+      }
+      return parsed;
+    } catch {
+      try {
+        sessionStorage.removeItem(snapshotKey);
+      } catch {
+        // ignore
+      }
+      return undefined;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenario.id]);
+
+  const [state, send, actorRef] = useMachine(machine, {
+    snapshot: persistedSnapshot,
+  });
   const t = useTranslations();
 
-  // Save just the stage name for diagnostics (lightweight, no XState deps)
+  // Save full snapshot on every state change so the user can refresh / switch
+  // locale mid-game without losing progress. Clear once the case is finished:
+  // debrief already persisted the session via finishCaseAction.
   useEffect(() => {
     try {
       sessionStorage.setItem(`${storageKey}-stage`, String(state.value));
-      if (state.value === "completed") {
+      if (state.value === "debrief" || state.value === "completed") {
+        sessionStorage.removeItem(snapshotKey);
         sessionStorage.removeItem(`${storageKey}-stage`);
+        return;
       }
+      const snap = actorRef.getPersistedSnapshot();
+      sessionStorage.setItem(snapshotKey, JSON.stringify(snap));
     } catch {
-      // ignore
+      // quota exceeded or storage disabled — non-fatal
     }
-  }, [state.value, storageKey]);
+  }, [state, actorRef, storageKey, snapshotKey]);
 
   const stage = state.value as string;
 
@@ -92,7 +125,7 @@ export function GameContainerInner({ scenario }: { scenario: Scenario }) {
           scenario={scenario}
           chosenSolutionId={state.context.chosenSolutionId}
           investigationAnswers={state.context.investigationAnswers}
-          evidenceViewed={[...state.context.evidenceViewed]}
+          evidenceViewed={state.context.evidenceViewed}
           onSubmitText={(text) =>
             send({ type: "SUBMIT_EXPLANATION", text })
           }
@@ -117,7 +150,7 @@ export function GameContainerInner({ scenario }: { scenario: Scenario }) {
           scenario={scenario}
           scores={state.context.scores}
           aiEvaluation={state.context.aiEvaluation}
-          evidenceViewed={Array.from(state.context.evidenceViewed)}
+          evidenceViewed={state.context.evidenceViewed}
           investigationAnswers={state.context.investigationAnswers}
           chosenSolutionId={state.context.chosenSolutionId}
           explanationText={state.context.explanationText}
