@@ -55,10 +55,17 @@ export default async function StudentDashboard({
     grade: null as "10" | "11" | null,
   };
 
-  const scenarios = getAllScenarios().map(getScenarioMeta);
+  const allMeta = getAllScenarios().map(getScenarioMeta);
+  // Students see only cases for their class; if grade is missing (legacy users
+  // or teachers viewing this page), fall back to showing all cases.
+  const scenarios =
+    user.role === "student" && user.grade
+      ? allMeta.filter((s) => s.grade === user.grade)
+      : allMeta;
   const completedCount = realUser
     ? await getCompletedCasesCount(realUser.id)
     : 0;
+  const gradeMissing = user.role === "student" && !user.grade;
 
   return (
     <div className="container py-10 relative">
@@ -82,6 +89,11 @@ export default async function StudentDashboard({
             ? "Выбери дело — и начни своё расследование."
             : "Бір істі таңда — және тергеуді баста."}
         </p>
+        {gradeMissing && (
+          <div className="mt-6 inline-flex items-center gap-2 text-sm bg-warning/10 text-warning border border-warning/30 px-4 py-2 rounded-lg">
+            {t("auth.gradeRequired")}
+          </div>
+        )}
       </div>
 
       {/* STATS */}

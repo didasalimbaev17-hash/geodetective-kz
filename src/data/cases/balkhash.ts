@@ -10,6 +10,7 @@ export const balkhashScenario: Scenario = {
     subtitle: { kk: "Жаңа Арал қаупі?", ru: "Новый Арал на подходе?" },
     difficulty: 3,
     estimatedMinutes: 22,
+    grade: "10",
     tags: ["экология", "су", "Қазақстан", "трансшекаралық"],
     coverImage:
       "https://picsum.photos/seed/balkhash-lake/1280/720",

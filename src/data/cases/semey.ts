@@ -10,6 +10,7 @@ export const semeyScenario: Scenario = {
     subtitle: { kk: "40 жыл сынақ. Салдары қазір.", ru: "40 лет испытаний. Последствия сегодня." },
     difficulty: 4,
     estimatedMinutes: 25,
+    grade: "11",
     tags: ["радиация", "ВКО", "денсаулық", "тарих"],
     coverImage:
       "https://picsum.photos/seed/semey-steppe/1280/720",

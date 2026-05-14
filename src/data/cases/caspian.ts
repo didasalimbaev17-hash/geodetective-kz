@@ -10,6 +10,7 @@ export const caspianScenario: Scenario = {
     subtitle: { kk: "Тюлень-балалары неге өледі?", ru: "Почему гибнут детёныши тюленей?" },
     difficulty: 3,
     estimatedMinutes: 20,
+    grade: "10",
     tags: ["теңіз", "Маңғыстау", "мұнай", "климат"],
     coverImage:
       "https://picsum.photos/seed/caspian-sea/1280/720",

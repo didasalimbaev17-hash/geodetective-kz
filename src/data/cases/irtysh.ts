@@ -13,6 +13,7 @@ export const irtyshScenario: Scenario = {
     },
     difficulty: 3,
     estimatedMinutes: 20,
+    grade: "10",
     tags: ["өзен", "трансшекаралық", "ластану", "ҚХР"],
     coverImage:
       "https://picsum.photos/seed/irtysh-river/1280/720",

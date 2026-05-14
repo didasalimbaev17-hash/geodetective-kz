@@ -21,5 +21,16 @@ export default async function CasePage({
   const scenario = getScenarioById(id);
   if (!scenario) notFound();
 
+  // Class isolation: a student in 10th grade cannot open an 11th-grade case
+  // (and vice versa). Teachers/admins bypass this — they can review any case.
+  if (
+    user &&
+    user.role === "student" &&
+    user.grade &&
+    scenario.meta.grade !== user.grade
+  ) {
+    redirect("/student/dashboard");
+  }
+
   return <GameContainer scenario={scenario} />;
 }

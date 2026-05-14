@@ -23,6 +23,10 @@ export function getAllScenarios(): Scenario[] {
   return SEED_SCENARIOS;
 }
 
+export function getScenariosForGrade(grade: "10" | "11"): Scenario[] {
+  return SEED_SCENARIOS.filter((s) => s.meta.grade === grade);
+}
+
 export type ScenarioMeta = {
   id: string;
   slug: string;
@@ -30,6 +34,7 @@ export type ScenarioMeta = {
   subtitle?: { kk: string; ru?: string };
   difficulty: number;
   estimatedMinutes: number;
+  grade: "10" | "11";
   tags: string[];
   coverImage?: string;
   region: { center: { lat: number; lng: number } };
@@ -43,6 +48,7 @@ export function getScenarioMeta(s: Scenario): ScenarioMeta {
     subtitle: s.meta.subtitle,
     difficulty: s.meta.difficulty,
     estimatedMinutes: s.meta.estimatedMinutes,
+    grade: s.meta.grade,
     tags: s.meta.tags,
     coverImage: s.meta.coverImage,
     region: { center: s.region.center },

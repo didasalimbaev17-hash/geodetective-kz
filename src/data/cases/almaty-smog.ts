@@ -13,6 +13,7 @@ export const almatySmogScenario: Scenario = {
     },
     difficulty: 2,
     estimatedMinutes: 18,
+    grade: "11",
     tags: ["ауа", "Алматы", "ТЭЦ", "автокөлік"],
     coverImage:
       "https://picsum.photos/seed/almaty-mountains-smog/1280/720",

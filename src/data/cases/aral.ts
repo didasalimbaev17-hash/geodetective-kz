@@ -16,7 +16,8 @@ export const aralScenario: Scenario = {
     },
     difficulty: 2,
     estimatedMinutes: 20,
-    tags: ["экология", "су_ресурстары", "Қазақстан", "10_сынып"],
+    grade: "11",
+    tags: ["экология", "су_ресурстары", "Қазақстан"],
     coverImage: "https://picsum.photos/seed/aral-sea/1280/720",
   },
 

@@ -207,6 +207,7 @@ export const scenarioSchema = z.object({
     subtitle: localizedText.optional(),
     difficulty: z.number().int().min(1).max(5).default(2),
     estimatedMinutes: z.number().default(20),
+    grade: z.enum(["10", "11"]).default("10"),
     tags: z.array(z.string()).default([]),
     coverImage: z.string().optional(),
   }),
