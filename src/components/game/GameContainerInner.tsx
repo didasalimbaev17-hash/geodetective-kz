@@ -117,6 +117,11 @@ export function GameContainerInner({ scenario }: { scenario: Scenario }) {
           scenario={scenario}
           scores={state.context.scores}
           aiEvaluation={state.context.aiEvaluation}
+          evidenceViewed={Array.from(state.context.evidenceViewed)}
+          investigationAnswers={state.context.investigationAnswers}
+          chosenSolutionId={state.context.chosenSolutionId}
+          explanationText={state.context.explanationText}
+          startedAt={state.context.startedAt}
         />
       )}
     </div>

@@ -1,6 +1,9 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { and, eq, sql } from "drizzle-orm";
 import { getCurrentUserProfile } from "@/server/auth/get-user";
+import { getDb } from "@/server/db";
+import { caseSessions } from "@/server/db/schema";
 import { Link } from "@/i18n/routing";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +13,22 @@ import { CaseCover } from "@/components/art/CaseCover";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText, xpForLevel } from "@/lib/utils";
 import { ArrowRight, Clock, Star, Trophy, Sparkles, Flame, Target } from "lucide-react";
+
+async function getCompletedCasesCount(userId: string): Promise<number> {
+  try {
+    const db = getDb();
+    const rows = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(caseSessions)
+      .where(
+        and(eq(caseSessions.userId, userId), eq(caseSessions.state, "completed"))
+      );
+    return rows[0]?.count ?? 0;
+  } catch (err) {
+    console.error("[getCompletedCasesCount]", err);
+    return 0;
+  }
+}
 
 export default async function StudentDashboard({
   params,
@@ -38,6 +57,9 @@ export default async function StudentDashboard({
   const scenarios = getAllScenarios().map(getScenarioMeta);
   const xpToNext = xpForLevel(user.level + 1);
   const xpProgress = Math.min(100, Math.round((user.xp / xpToNext) * 100));
+  const completedCount = realUser
+    ? await getCompletedCasesCount(realUser.id)
+    : 0;
 
   return (
     <div className="container py-10 relative">
@@ -87,7 +109,7 @@ export default async function StudentDashboard({
         <StatCard
           icon={Target}
           label={t("dashboard.completedCases")}
-          value={0}
+          value={completedCount}
           tone="success"
         />
       </div>

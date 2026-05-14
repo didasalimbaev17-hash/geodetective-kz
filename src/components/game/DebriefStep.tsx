@@ -1,14 +1,15 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import type { Scenario } from "@/schemas/case.schema";
 import type { AiGradingResponse } from "@/schemas/ai.schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "@/i18n/routing";
 import { getLocalizedText } from "@/lib/utils";
+import { finishCaseAction, type FinishCaseResult } from "@/server/actions/finishCase";
 import {
   Award,
   ExternalLink,
@@ -17,19 +18,67 @@ import {
   Sparkles,
   Target,
   Brain,
+  TrendingUp,
 } from "lucide-react";
 
 export function DebriefStep({
   scenario,
   scores,
   aiEvaluation,
+  evidenceViewed,
+  investigationAnswers,
+  chosenSolutionId,
+  explanationText,
+  startedAt,
 }: {
   scenario: Scenario;
   scores: { investigation: number; solution: number; ai: number; total: number };
   aiEvaluation: AiGradingResponse | null;
+  evidenceViewed?: string[];
+  investigationAnswers?: Record<string, number | number[]>;
+  chosenSolutionId?: string | null;
+  explanationText?: string;
+  startedAt?: number;
 }) {
   const t = useTranslations("game.debrief");
   const locale = useLocale();
+
+  const recordedRef = useRef(false);
+  const [recordResult, setRecordResult] = useState<FinishCaseResult | null>(
+    null
+  );
+
+  useEffect(() => {
+    if (recordedRef.current) return;
+    recordedRef.current = true;
+    const timeSpentSeconds = startedAt
+      ? Math.max(0, Math.round((Date.now() - startedAt) / 1000))
+      : 0;
+    finishCaseAction({
+      scenarioSlug: scenario.id,
+      scores,
+      evidenceViewed: evidenceViewed ?? [],
+      investigationAnswers: investigationAnswers ?? {},
+      chosenSolutionId: chosenSolutionId ?? null,
+      explanationText: explanationText ?? "",
+      aiEvaluation: aiEvaluation
+        ? {
+            scores: aiEvaluation.scores,
+            comments: aiEvaluation.comments,
+            total: aiEvaluation.total,
+            overall: aiEvaluation.overall,
+            flags: aiEvaluation.flags,
+          }
+        : null,
+      timeSpentSeconds,
+    })
+      .then((res) => setRecordResult(res))
+      .catch((err) => {
+        // Never break the debrief UI on persistence failure
+        console.error("[DebriefStep.finishCaseAction]", err);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -43,6 +92,45 @@ export function DebriefStep({
           <span className="text-2xl text-muted-foreground">/100</span>
         </div>
       </div>
+
+      {recordResult?.ok && recordResult.recorded && (
+        <Card className="mb-6 border-primary/40 bg-gradient-to-r from-primary/10 via-secondary/10 to-transparent">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="size-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="size-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <div className="font-display text-lg font-bold">
+                +{recordResult.xpGained} XP
+                {recordResult.leveledUp && (
+                  <span className="ml-2 text-secondary">
+                    {locale === "ru"
+                      ? `· Новый уровень ${recordResult.newLevel}!`
+                      : `· Жаңа деңгей ${recordResult.newLevel}!`}
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {locale === "ru"
+                  ? `Прогресс сохранён · Всего XP: ${recordResult.newXp}`
+                  : `Прогресс сақталды · Барлық XP: ${recordResult.newXp}`}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {recordResult?.ok &&
+        !recordResult.recorded &&
+        recordResult.reason === "already_recorded" && (
+          <Card className="mb-6 border-border/60 bg-muted/30">
+            <CardContent className="p-3 text-sm text-muted-foreground text-center">
+              {locale === "ru"
+                ? "Этот кейс уже был засчитан — XP начисляется только за первое прохождение."
+                : "Бұл кейс бұрын есепке алынған — XP тек алғашқы өту үшін беріледі."}
+            </CardContent>
+          </Card>
+        )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <ScoreCard
