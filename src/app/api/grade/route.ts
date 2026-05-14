@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       chosenSolutionId,
       investigationAnswers,
       evidenceViewed,
+      locale,
     } = body;
 
     if (!scenarioId || !essayText || !chosenSolutionId) {
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
       chosenSolutionId,
       investigationAnswers: investigationAnswers ?? {},
       evidenceViewed: evidenceViewed ?? [],
+      locale: locale === "ru" ? "ru" : "kk",
     });
 
     const timeoutPromise = new Promise<"__timeout__">((resolve) =>

@@ -61,6 +61,7 @@ export function ExplanationStep({
           chosenSolutionId,
           investigationAnswers,
           evidenceViewed,
+          locale, // в каком языке возвращать комментарии
         }),
         signal: controller.signal,
       });
