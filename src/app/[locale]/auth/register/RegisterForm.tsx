@@ -29,7 +29,8 @@ export function RegisterForm({
     startTransition(async () => {
       const result = await signUpAction(formData);
       if (!result.ok) {
-        setError(result.error);
+        const translated = t(`auth.errors.${result.errorCode}` as never);
+        setError(result.errorDetail ? `${translated} (${result.errorDetail})` : translated);
       } else if (result.needsEmailConfirm) {
         setSuccess(t("auth.checkEmail"));
       } else {

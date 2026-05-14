@@ -7,23 +7,29 @@ import {
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+// Error codes (not translated text). Frontend translates them via i18n.
+export type AuthErrorCode =
+  | "supabase_not_configured"
+  | "missing_credentials"
+  | "missing_fields"
+  | "password_too_short"
+  | "signin_failed"
+  | "signup_failed";
+
 export type AuthResult =
   | { ok: true; needsEmailConfirm?: boolean }
-  | { ok: false; error: string };
-
-const SUPABASE_NOT_CONFIGURED_ERROR =
-  "Сервер дерекқорсыз демо-режимінде. Әкімші Supabase-ті қосуы керек.";
+  | { ok: false; errorCode: AuthErrorCode; errorDetail?: string };
 
 export async function signInAction(formData: FormData): Promise<AuthResult> {
   if (!isSupabaseConfigured()) {
-    return { ok: false, error: SUPABASE_NOT_CONFIGURED_ERROR };
+    return { ok: false, errorCode: "supabase_not_configured" };
   }
 
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    return { ok: false, error: "Email мен құпиясөзді толтырыңыз" };
+    return { ok: false, errorCode: "missing_credentials" };
   }
 
   try {
@@ -33,19 +39,21 @@ export async function signInAction(formData: FormData): Promise<AuthResult> {
       password,
     });
 
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      return { ok: false, errorCode: "signin_failed", errorDetail: error.message };
+    }
 
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (err) {
     console.error("[signInAction]", err);
-    return { ok: false, error: "Кіру сәтсіз. Кейінірек қайта көріңіз." };
+    return { ok: false, errorCode: "signin_failed" };
   }
 }
 
 export async function signUpAction(formData: FormData): Promise<AuthResult> {
   if (!isSupabaseConfigured()) {
-    return { ok: false, error: SUPABASE_NOT_CONFIGURED_ERROR };
+    return { ok: false, errorCode: "supabase_not_configured" };
   }
 
   const email = String(formData.get("email") ?? "");
@@ -56,11 +64,11 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
     | "teacher";
 
   if (!email || !password || !fullName) {
-    return { ok: false, error: "Барлық өрістерді толтырыңыз" };
+    return { ok: false, errorCode: "missing_fields" };
   }
 
   if (password.length < 6) {
-    return { ok: false, error: "Құпиясөз кемінде 6 таңбадан тұруы керек" };
+    return { ok: false, errorCode: "password_too_short" };
   }
 
   try {
@@ -74,11 +82,11 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
       },
     });
 
-    if (error) return { ok: false, error: error.message };
+    if (error) {
+      return { ok: false, errorCode: "signup_failed", errorDetail: error.message };
+    }
 
     // Profile is created automatically by the DB trigger `handle_new_user`
-    // using raw_user_meta_data (full_name, role, locale).
-
     if (!data.session) {
       return { ok: true, needsEmailConfirm: true };
     }
@@ -87,7 +95,7 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
     return { ok: true };
   } catch (err) {
     console.error("[signUpAction]", err);
-    return { ok: false, error: "Тіркелу сәтсіз. Кейінірек қайта көріңіз." };
+    return { ok: false, errorCode: "signup_failed" };
   }
 }
 

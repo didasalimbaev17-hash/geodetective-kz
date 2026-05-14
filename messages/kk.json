@@ -78,6 +78,14 @@
     }
   },
   "auth": {
+    "errors": {
+      "supabase_not_configured": "Сервер дерекқорсыз демо-режимінде. Әкімші Supabase-ті қосуы керек.",
+      "missing_credentials": "Email мен құпиясөзді толтырыңыз",
+      "missing_fields": "Барлық өрістерді толтырыңыз",
+      "password_too_short": "Құпиясөз кемінде 6 таңбадан тұруы керек",
+      "signin_failed": "Кіру сәтсіз. Кейінірек қайта көріңіз.",
+      "signup_failed": "Тіркелу сәтсіз. Кейінірек қайта көріңіз."
+    },
     "loginTitle": "Жүйеге кіру",
     "registerTitle": "Тіркелу",
     "roleStudent": "Оқушы",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type CaseSlug =
@@ -17,13 +18,27 @@ export function CaseCover({
   slug: string;
   className?: string;
 }) {
+  const locale = useLocale();
+  const lang: "kk" | "ru" = locale === "ru" ? "ru" : "kk";
   const Comp = COVERS[slug as CaseSlug] ?? FallbackCover;
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      <Comp />
+      <Comp lang={lang} />
     </div>
   );
 }
+
+type CoverProps = { lang: "kk" | "ru" };
+
+const IRTYSH_CITIES = {
+  kk: { ust: "Өскемен", semey: "Семей", pavlodar: "Павлодар", omsk: "Омбы" },
+  ru: { ust: "Усть-Каменогорск", semey: "Семей", pavlodar: "Павлодар", omsk: "Омск" },
+} as const;
+
+const IRTYSH_COUNTRIES = {
+  kk: { china: "ҚХР", kazakhstan: "ҚАЗАҚСТАН", russia: "РЕСЕЙ" },
+  ru: { china: "КНР", kazakhstan: "КАЗАХСТАН", russia: "РОССИЯ" },
+} as const;
 
 // Все SVG: viewBox 800×500. Композиция: главные объекты в центре по вертикали (y=200..400),
 // декоративные элементы — фон / по краям. Текстовые метки удалены — заголовок есть на карточке.
@@ -31,7 +46,7 @@ export function CaseCover({
 // ============================================================
 // 1. ARAL — корабль на пустынном дне
 // ============================================================
-function AralCover() {
+function AralCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -110,7 +125,7 @@ function AralCover() {
 // ============================================================
 // 2. BALKHASH — два цвета озера в горах
 // ============================================================
-function BalkhashCover() {
+function BalkhashCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -184,7 +199,7 @@ function BalkhashCover() {
 // ============================================================
 // 3. ALMATY SMOG — горы за смогом, город, ТЭЦ
 // ============================================================
-function AlmatyCover() {
+function AlmatyCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -264,7 +279,7 @@ function AlmatyCover() {
 // ============================================================
 // 4. SEMEY — атомный гриб
 // ============================================================
-function SemeyCover() {
+function SemeyCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -336,7 +351,7 @@ function SemeyCover() {
 // ============================================================
 // 5. CASPIAN — море, луна, нефтяные платформы
 // ============================================================
-function CaspianCover() {
+function CaspianCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -441,7 +456,9 @@ function CaspianCover() {
 // ============================================================
 // 6. IRTYSH — карта 3 стран и река через них
 // ============================================================
-function IrtyshCover() {
+function IrtyshCover({ lang }: CoverProps) {
+  const countries = IRTYSH_COUNTRIES[lang];
+  const cities = IRTYSH_CITIES[lang];
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -458,28 +475,26 @@ function IrtyshCover() {
 
       <rect width="800" height="500" fill="url(#ir-sky)" />
 
-      {/* Three country bands */}
       <rect x="0" y="0" width="800" height="170" fill="#5a3030" opacity="0.35" />
       <rect x="0" y="170" width="800" height="180" fill="#3a4a30" opacity="0.35" />
       <rect x="0" y="350" width="800" height="150" fill="#30303a" opacity="0.35" />
 
-      {/* Country labels — большие, по центру областей */}
       <text x="690" y="95" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" textAnchor="middle" opacity="0.9">
-        ҚХР
+        {countries.china}
       </text>
       <text x="690" y="118" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11" textAnchor="middle">
         CHINA
       </text>
 
       <text x="120" y="270" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" opacity="0.9">
-        ҚАЗАҚСТАН
+        {countries.kazakhstan}
       </text>
       <text x="120" y="293" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11">
         KAZAKHSTAN
       </text>
 
       <text x="120" y="430" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="22" fontWeight="700" letterSpacing="2" opacity="0.9">
-        РЕСЕЙ
+        {countries.russia}
       </text>
       <text x="120" y="453" fill="#A6A294" fontFamily="ui-monospace, monospace" fontSize="11">
         RUSSIA
@@ -517,25 +532,25 @@ function IrtyshCover() {
         <circle cx="540" cy="230" r="6" fill="#E8A93C" />
         <circle cx="540" cy="230" r="10" fill="#E8A93C" opacity="0.3" />
         <text x="558" y="227" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
-          Өскемен
+          {cities.ust}
         </text>
 
         <circle cx="400" cy="300" r="6" fill="#E8A93C" />
         <circle cx="400" cy="300" r="10" fill="#E8A93C" opacity="0.3" />
         <text x="418" y="297" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
-          Семей
+          {cities.semey}
         </text>
 
         <circle cx="250" cy="380" r="6" fill="#E8A93C" />
         <circle cx="250" cy="380" r="10" fill="#E8A93C" opacity="0.3" />
         <text x="268" y="377" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
-          Павлодар
+          {cities.pavlodar}
         </text>
 
         <circle cx="100" cy="470" r="6" fill="#E8A93C" />
         <circle cx="100" cy="470" r="10" fill="#E8A93C" opacity="0.3" />
         <text x="118" y="467" fill="#F0EAD6" fontFamily="ui-monospace, monospace" fontSize="11" fontWeight="600">
-          Омбы
+          {cities.omsk}
         </text>
       </g>
     </svg>
@@ -545,7 +560,7 @@ function IrtyshCover() {
 // ============================================================
 // FALLBACK
 // ============================================================
-function FallbackCover() {
+function FallbackCover(_props: CoverProps) {
   return (
     <svg viewBox="0 0 800 500" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -563,7 +578,7 @@ function FallbackCover() {
   );
 }
 
-const COVERS: Record<CaseSlug, React.ComponentType> = {
+const COVERS: Record<CaseSlug, React.ComponentType<CoverProps>> = {
   "case-aral-2025": AralCover,
   "case-balkhash-2025": BalkhashCover,
   "case-almaty-smog-2025": AlmatyCover,

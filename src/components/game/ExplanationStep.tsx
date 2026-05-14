@@ -81,7 +81,9 @@ export function ExplanationStep({
       const isAbort =
         err instanceof DOMException && err.name === "AbortError";
       const msg = isAbort
-        ? "Превышено время ожидания (90с). Проверьте Vercel logs."
+        ? locale === "ru"
+          ? "Превышено время ожидания (90с)"
+          : "Күту уақыты асып кетті (90с)"
         : err instanceof Error
           ? err.message
           : "Unknown error";

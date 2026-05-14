@@ -20,7 +20,8 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await signInAction(formData);
       if (!result.ok) {
-        setError(result.error);
+        const translated = t(`auth.errors.${result.errorCode}` as never);
+        setError(result.errorDetail ? `${translated} (${result.errorDetail})` : translated);
       } else {
         router.push("/student/dashboard");
         router.refresh();

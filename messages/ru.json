@@ -78,6 +78,14 @@
     }
   },
   "auth": {
+    "errors": {
+      "supabase_not_configured": "Сервер в демо-режиме без БД. Администратор должен подключить Supabase.",
+      "missing_credentials": "Заполните email и пароль",
+      "missing_fields": "Заполните все поля",
+      "password_too_short": "Пароль должен быть минимум 6 символов",
+      "signin_failed": "Не удалось войти. Попробуйте позже.",
+      "signup_failed": "Регистрация не удалась. Попробуйте позже."
+    },
     "loginTitle": "Вход в систему",
     "registerTitle": "Регистрация",
     "roleStudent": "Ученик",

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type SceneTheme =
@@ -22,6 +23,11 @@ function themeFromScenario(scenarioId: string): SceneTheme {
   return "default";
 }
 
+const COUNTRY_LABELS = {
+  kk: { china: "ҚХР", kazakhstan: "ҚАЗАҚСТАН", russia: "РЕСЕЙ" },
+  ru: { china: "КНР", kazakhstan: "КАЗАХСТАН", russia: "РОССИЯ" },
+} as const;
+
 /**
  * Тематический визуальный фон симуляции. Реагирует на ключевые индикаторы:
  * - вода (waterLevel) → размер озера / моря
@@ -42,6 +48,8 @@ export function SimulationVisual({
   className?: string;
 }) {
   const theme = themeFromScenario(scenarioId);
+  const locale = useLocale();
+  const lang = locale === "ru" ? "ru" : "kk";
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
@@ -50,7 +58,7 @@ export function SimulationVisual({
       {theme === "almaty" && <AlmatyScene indicators={indicators} progress={progress} />}
       {theme === "semey" && <SemeyScene indicators={indicators} progress={progress} />}
       {theme === "caspian" && <CaspianScene indicators={indicators} progress={progress} />}
-      {theme === "irtysh" && <IrtyshScene indicators={indicators} progress={progress} />}
+      {theme === "irtysh" && <IrtyshScene indicators={indicators} progress={progress} lang={lang} />}
       {theme === "default" && <DefaultScene />}
 
       {/* Scanline */}
@@ -370,12 +378,16 @@ function CaspianScene({ indicators }: SceneProps) {
 // ============================================================
 // IRTYSH — река через 3 страны, толщина зависит от waterFlow
 // ============================================================
-function IrtyshScene({ indicators }: SceneProps) {
+function IrtyshScene({
+  indicators,
+  lang,
+}: SceneProps & { lang: "kk" | "ru" }) {
   const flow = indicators.waterFlow ?? 5;
   // 3..10 km3/yr range
   const thickness = Math.max(3, Math.min(20, (flow / 10) * 20));
   const pollution = indicators.pollutionIndex ?? 50;
   const riverColor = pollution > 60 ? "#6a5530" : pollution > 30 ? "#3da9c9" : "#5cd0e8";
+  const labels = COUNTRY_LABELS[lang];
 
   return (
     <svg viewBox="0 0 800 480" className="w-full h-full block" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -394,9 +406,9 @@ function IrtyshScene({ indicators }: SceneProps) {
       <rect x="0" y="340" width="800" height="140" fill="#30303a" opacity="0.3" />
 
       {/* Country labels */}
-      <text x="690" y="90" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700" textAnchor="middle">ҚХР</text>
-      <text x="100" y="260" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700">ҚАЗАҚСТАН</text>
-      <text x="100" y="420" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700">РЕСЕЙ</text>
+      <text x="690" y="90" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700" textAnchor="middle">{labels.china}</text>
+      <text x="100" y="260" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700">{labels.kazakhstan}</text>
+      <text x="100" y="420" fill="#E8A93C" fontFamily="ui-monospace, monospace" fontSize="20" fontWeight="700">{labels.russia}</text>
 
       {/* Borders */}
       <line x1="0" y1="160" x2="800" y2="160" stroke="#E8A93C" strokeWidth="1" strokeDasharray="6 4" opacity="0.5" />
