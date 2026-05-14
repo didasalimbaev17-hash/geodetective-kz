@@ -12,6 +12,7 @@ export type CurrentUser = {
   locale: string;
   xp: number;
   level: number;
+  grade: "10" | "11" | null;
 } | null;
 
 /**
@@ -28,7 +29,7 @@ export async function getCurrentUserProfile(): Promise<CurrentUser> {
     const supabase = await createSupabaseServerClient();
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, email, role, full_name, locale, xp, level")
+      .select("id, email, role, full_name, locale, xp, level, grade")
       .eq("id", authUser.id)
       .maybeSingle();
 
@@ -41,8 +42,13 @@ export async function getCurrentUserProfile(): Promise<CurrentUser> {
         locale: "kk",
         xp: 0,
         level: 1,
+        grade: null,
       };
     }
+
+    const gradeRaw = profile.grade as string | null;
+    const grade: "10" | "11" | null =
+      gradeRaw === "10" || gradeRaw === "11" ? gradeRaw : null;
 
     return {
       id: profile.id,
@@ -52,6 +58,7 @@ export async function getCurrentUserProfile(): Promise<CurrentUser> {
       locale: profile.locale,
       xp: profile.xp ?? 0,
       level: profile.level ?? 1,
+      grade,
     };
   } catch (err) {
     console.error("[getCurrentUserProfile]", err);

@@ -21,11 +21,13 @@ export function RegisterForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [role, setRole] = useState<"student" | "teacher">(initialRole);
+  const [grade, setGrade] = useState<"10" | "11">("10");
 
   async function onSubmit(formData: FormData) {
     setError(null);
     setSuccess(null);
     formData.set("role", role);
+    if (role === "student") formData.set("grade", grade);
     startTransition(async () => {
       const result = await signUpAction(formData);
       if (!result.ok) {
@@ -70,6 +72,29 @@ export function RegisterForm({
           ))}
         </div>
       </div>
+
+      {role === "student" && (
+        <div className="space-y-2">
+          <Label>{t("auth.chooseGrade")}</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {(["10", "11"] as const).map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => setGrade(g)}
+                className={cn(
+                  "py-3 px-4 rounded-lg border-2 text-sm font-medium transition-all",
+                  grade === g
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border hover:border-border/80 text-muted-foreground"
+                )}
+              >
+                {g === "10" ? t("auth.grade10") : t("auth.grade11")}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="fullName">{t("common.fullName")}</Label>

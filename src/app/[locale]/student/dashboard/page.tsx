@@ -11,8 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { CaseCover } from "@/components/art/CaseCover";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
-import { getLocalizedText, xpForLevel } from "@/lib/utils";
-import { ArrowRight, Clock, Star, Trophy, Sparkles, Flame, Target } from "lucide-react";
+import { getLocalizedText } from "@/lib/utils";
+import { ArrowRight, Clock, Star, Sparkles, Flame, Target } from "lucide-react";
 
 async function getCompletedCasesCount(userId: string): Promise<number> {
   try {
@@ -52,11 +52,10 @@ export default async function StudentDashboard({
     locale: "kk",
     xp: 0,
     level: 1,
+    grade: null as "10" | "11" | null,
   };
 
   const scenarios = getAllScenarios().map(getScenarioMeta);
-  const xpToNext = xpForLevel(user.level + 1);
-  const xpProgress = Math.min(100, Math.round((user.xp / xpToNext) * 100));
   const completedCount = realUser
     ? await getCompletedCasesCount(realUser.id)
     : 0;
@@ -86,19 +85,12 @@ export default async function StudentDashboard({
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-        <StatCard
-          icon={Trophy}
-          label={t("dashboard.currentLevel")}
-          value={user.level}
-          tone="primary"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-16">
         <StatCard
           icon={Sparkles}
           label="XP"
-          value={`${user.xp} / ${xpToNext}`}
+          value={user.xp}
           tone="secondary"
-          progress={xpProgress}
         />
         <StatCard
           icon={Flame}

@@ -62,6 +62,11 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
   const role = String(formData.get("role") ?? "student") as
     | "student"
     | "teacher";
+  const gradeRaw = String(formData.get("grade") ?? "");
+  const grade: "10" | "11" | null =
+    role === "student" && (gradeRaw === "10" || gradeRaw === "11")
+      ? gradeRaw
+      : null;
 
   if (!email || !password || !fullName) {
     return { ok: false, errorCode: "missing_fields" };
@@ -77,7 +82,7 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
       email,
       password,
       options: {
-        data: { full_name: fullName, role },
+        data: { full_name: fullName, role, grade },
         emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback`,
       },
     });
@@ -86,7 +91,20 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
       return { ok: false, errorCode: "signup_failed", errorDetail: error.message };
     }
 
-    // Profile is created automatically by the DB trigger `handle_new_user`
+    // Profile is created automatically by the DB trigger `handle_new_user`.
+    // The trigger reads only full_name + role; grade is not in its scope, so
+    // we explicitly UPDATE the profile here when we have a session.
+    if (data.session && grade && data.user) {
+      try {
+        await supabase
+          .from("profiles")
+          .update({ grade })
+          .eq("id", data.user.id);
+      } catch (updateErr) {
+        console.error("[signUpAction] grade update failed", updateErr);
+      }
+    }
+
     if (!data.session) {
       return { ok: true, needsEmailConfirm: true };
     }

@@ -102,13 +102,6 @@ export function DebriefStep({
             <div className="flex-1">
               <div className="font-display text-lg font-bold">
                 +{recordResult.xpGained} XP
-                {recordResult.leveledUp && (
-                  <span className="ml-2 text-secondary">
-                    {locale === "ru"
-                      ? `· Новый уровень ${recordResult.newLevel}!`
-                      : `· Жаңа деңгей ${recordResult.newLevel}!`}
-                  </span>
-                )}
               </div>
               <div className="text-xs text-muted-foreground">
                 {locale === "ru"
