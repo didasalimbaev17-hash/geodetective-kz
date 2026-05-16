@@ -20,8 +20,9 @@ export function LoginForm() {
     startTransition(async () => {
       const result = await signInAction(formData);
       if (!result.ok) {
+        // Show only the localized message — no raw English error in parens.
         const translated = t(`auth.errors.${result.errorCode}` as never);
-        setError(result.errorDetail ? `${translated} (${result.errorDetail})` : translated);
+        setError(translated);
       } else {
         router.push("/student/dashboard");
         router.refresh();

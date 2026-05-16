@@ -14,11 +14,36 @@ export type AuthErrorCode =
   | "missing_fields"
   | "password_too_short"
   | "signin_failed"
-  | "signup_failed";
+  | "signup_failed"
+  | "invalid_credentials"
+  | "email_not_confirmed"
+  | "rate_limit"
+  | "email_already_used";
 
 export type AuthResult =
   | { ok: true; needsEmailConfirm?: boolean }
   | { ok: false; errorCode: AuthErrorCode; errorDetail?: string };
+
+/**
+ * Map Supabase auth error messages to user-facing error codes.
+ * Supabase returns English messages; we translate them to our i18n codes.
+ */
+function mapSupabaseAuthError(message: string): AuthErrorCode {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials") || m.includes("invalid email or password")) {
+    return "invalid_credentials";
+  }
+  if (m.includes("email not confirmed")) {
+    return "email_not_confirmed";
+  }
+  if (m.includes("rate limit") || m.includes("too many requests")) {
+    return "rate_limit";
+  }
+  if (m.includes("already registered") || m.includes("user already")) {
+    return "email_already_used";
+  }
+  return "signin_failed";
+}
 
 export async function signInAction(formData: FormData): Promise<AuthResult> {
   if (!isSupabaseConfigured()) {
@@ -40,7 +65,8 @@ export async function signInAction(formData: FormData): Promise<AuthResult> {
     });
 
     if (error) {
-      return { ok: false, errorCode: "signin_failed", errorDetail: error.message };
+      const code = mapSupabaseAuthError(error.message);
+      return { ok: false, errorCode: code };
     }
 
     revalidatePath("/", "layout");
@@ -88,7 +114,13 @@ export async function signUpAction(formData: FormData): Promise<AuthResult> {
     });
 
     if (error) {
-      return { ok: false, errorCode: "signup_failed", errorDetail: error.message };
+      const code = mapSupabaseAuthError(error.message);
+      // For signup we prefer email_already_used; fallback to generic signup_failed
+      const finalCode: AuthErrorCode =
+        code === "email_already_used" || code === "rate_limit"
+          ? code
+          : "signup_failed";
+      return { ok: false, errorCode: finalCode };
     }
 
     // Profile is created automatically by the DB trigger `handle_new_user`.

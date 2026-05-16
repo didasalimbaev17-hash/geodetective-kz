@@ -32,7 +32,7 @@ export function RegisterForm({
       const result = await signUpAction(formData);
       if (!result.ok) {
         const translated = t(`auth.errors.${result.errorCode}` as never);
-        setError(result.errorDetail ? `${translated} (${result.errorDetail})` : translated);
+        setError(translated);
       } else if (result.needsEmailConfirm) {
         setSuccess(t("auth.checkEmail"));
       } else {
