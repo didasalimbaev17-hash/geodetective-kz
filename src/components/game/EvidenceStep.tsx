@@ -41,6 +41,15 @@ const TYPE_ICONS: Record<Evidence["type"], React.ComponentType<{ className?: str
   text_doc: FileText,
 };
 
+const TYPE_LABELS: Record<Evidence["type"], { kk: string; ru: string }> = {
+  satellite_compare: { kk: "Спутник суреттері", ru: "Спутник" },
+  chart: { kk: "График", ru: "График" },
+  stat_card: { kk: "Статистика", ru: "Статистика" },
+  migration_data: { kk: "Көші-қон", ru: "Миграция" },
+  photo_gallery: { kk: "Фото", ru: "Фото" },
+  text_doc: { kk: "Құжат", ru: "Документ" },
+};
+
 export function EvidenceStep({
   scenario,
   viewed,
@@ -136,8 +145,10 @@ export function EvidenceStep({
                 <h3 className="font-semibold leading-tight mb-1">
                   {getLocalizedText(ev.title, locale)}
                 </h3>
-                <p className="text-xs text-muted-foreground capitalize font-mono">
-                  {ev.type.replace(/_/g, " ")}
+                <p className="text-xs text-muted-foreground font-mono">
+                  {locale === "ru"
+                    ? TYPE_LABELS[ev.type].ru
+                    : TYPE_LABELS[ev.type].kk}
                 </p>
               </CardContent>
             </Card>
