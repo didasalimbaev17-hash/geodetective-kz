@@ -105,8 +105,9 @@ export default async function StudentDashboard({
         <StatCard
           icon={Sparkles}
           label="XP"
-          value={user.xp}
+          value={`${user.xp}/100`}
           tone="secondary"
+          href="/student/shop"
         />
         <StatCard
           icon={Flame}
@@ -119,6 +120,7 @@ export default async function StudentDashboard({
           label={t("dashboard.completedCases")}
           value={completedCount}
           tone="success"
+          href="/student/finished"
         />
       </div>
 
@@ -210,12 +212,14 @@ function StatCard({
   value,
   tone,
   progress,
+  href,
 }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
   value: string | number;
   tone: "primary" | "secondary" | "warning" | "success";
   progress?: number;
+  href?: string;
 }) {
   const toneStyles = {
     primary: {
@@ -246,9 +250,9 @@ function StatCard({
 
   const style = toneStyles[tone];
 
-  return (
+  const card = (
     <Card
-      className={`detective-card bg-gradient-to-br ${style.bg} ${style.border} relative overflow-hidden`}
+      className={`detective-card bg-gradient-to-br ${style.bg} ${style.border} relative overflow-hidden ${href ? "transition-transform hover:scale-[1.02] cursor-pointer" : ""}`}
     >
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-3">
@@ -257,6 +261,9 @@ function StatCard({
           >
             <Icon className={`size-5 ${style.iconColor}`} strokeWidth={1.5} />
           </div>
+          {href && (
+            <ArrowRight className="size-4 text-muted-foreground/60" />
+          )}
         </div>
         <div className="text-3xl font-display font-bold font-numeric text-foreground mb-1">
           {value}
@@ -270,4 +277,13 @@ function StatCard({
       </CardContent>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href as never} className="block">
+        {card}
+      </Link>
+    );
+  }
+  return card;
 }

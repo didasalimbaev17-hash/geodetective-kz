@@ -229,6 +229,45 @@ export const xpLog = pgTable("xp_log", {
 });
 
 // ============================================================
+// SHOP — каталог наград и история покупок ученика
+// ============================================================
+export const shopItems = pgTable("shop_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  titleKk: text("title_kk").notNull(),
+  titleRu: text("title_ru").notNull(),
+  descriptionKk: text("description_kk"),
+  descriptionRu: text("description_ru"),
+  cost: integer("cost").notNull(),
+  icon: text("icon").notNull(),
+  active: boolean("active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const shopPurchases = pgTable(
+  "shop_purchases",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    itemId: uuid("item_id")
+      .notNull()
+      .references(() => shopItems.id, { onDelete: "restrict" }),
+    costPaid: integer("cost_paid").notNull(),
+    state: text("state").notNull().default("active"),
+    purchasedAt: timestamp("purchased_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+  },
+  (t) => [
+    index("purchases_user_idx").on(t.userId),
+    index("purchases_state_idx").on(t.state),
+  ]
+);
+
+// ============================================================
 // RELATIONS
 // ============================================================
 export const profilesRelations = relations(profiles, ({ many }) => ({
@@ -303,3 +342,5 @@ export type NewCaseSession = typeof caseSessions.$inferInsert;
 export type AiEvaluation = typeof aiEvaluations.$inferSelect;
 export type Classroom = typeof classrooms.$inferSelect;
 export type Badge = typeof badges.$inferSelect;
+export type ShopItem = typeof shopItems.$inferSelect;
+export type ShopPurchase = typeof shopPurchases.$inferSelect;

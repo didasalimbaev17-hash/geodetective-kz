@@ -153,18 +153,12 @@ export async function finishCaseAction(
       });
     }
 
-    // 5. INSERT xp_log (delta = total score, 0..100)
-    const xpGained = Math.max(0, Math.round(input.scores.total));
-    if (xpGained > 0) {
-      await db.insert(xpLog).values({
-        userId: user.id,
-        delta: xpGained,
-        reason: `case_completed:${input.scenarioSlug}`,
-        refSessionId: sessionId,
-      });
-    }
+    // 5. XP начисление по ОС 2026-05-16:
+    //    - AI оценивает по шкале 0..100 (не трогаем промпт)
+    //    - В profiles.xp пишется total / 2
+    //    - Максимум XP на счёте = 100 (cap для engagement-петли магазина)
+    const xpFromTotal = Math.max(0, Math.round(input.scores.total / 2));
 
-    // 6. UPDATE profile xp + level
     const [profileRow] = await db
       .select({ xp: profiles.xp, level: profiles.level })
       .from(profiles)
@@ -173,7 +167,18 @@ export async function finishCaseAction(
 
     const oldXp = profileRow?.xp ?? 0;
     const oldLevel = profileRow?.level ?? 1;
-    const newXp = oldXp + xpGained;
+    const newXp = Math.min(100, oldXp + xpFromTotal);
+    const actualGained = newXp - oldXp;
+
+    if (actualGained > 0) {
+      await db.insert(xpLog).values({
+        userId: user.id,
+        delta: actualGained,
+        reason: `case_completed:${input.scenarioSlug}`,
+        refSessionId: sessionId,
+      });
+    }
+
     const newLevel = calculateLevel(newXp);
 
     await db
@@ -181,13 +186,12 @@ export async function finishCaseAction(
       .set({ xp: newXp, level: newLevel, updatedAt: new Date() })
       .where(eq(profiles.id, user.id));
 
-    // Refresh server-rendered pages that read profile/stats
     revalidatePath("/", "layout");
 
     return {
       ok: true,
       recorded: true,
-      xpGained,
+      xpGained: actualGained,
       newXp,
       newLevel,
       leveledUp: newLevel > oldLevel,
