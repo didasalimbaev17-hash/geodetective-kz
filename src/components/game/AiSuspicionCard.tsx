@@ -101,7 +101,7 @@ export function AiSuspicionCard({
       title:
         loc === "ru"
           ? "Похоже на AI-генерацию"
-          : "Жасанды интеллект жазған сияқты",
+          : "ЖИ көмегімен жазылған сияқты",
     },
   } as const;
 
@@ -122,8 +122,8 @@ export function AiSuspicionCard({
           <div className="flex-1 min-w-0">
             <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
               {loc === "ru"
-                ? "Проверка на ЖИ-генерацию"
-                : "ЖИ-генерация тексеру"}
+                ? "Проверка на AI-генерацию"
+                : "ЖИ көмегімен жазылғанын тексеру"}
             </div>
             <h3 className="font-display text-lg font-bold leading-tight">
               {meta.title}
@@ -137,7 +137,7 @@ export function AiSuspicionCard({
               <span className="text-base text-muted-foreground">%</span>
             </div>
             <div className="text-xs text-muted-foreground uppercase tracking-wider">
-              {loc === "ru" ? "ЖИ-балл" : "ЖИ-балл"}
+              {loc === "ru" ? "AI-балл" : "ЖИ-балл"}
             </div>
           </div>
         </div>
@@ -164,7 +164,7 @@ export function AiSuspicionCard({
 
         <p className="text-xs text-muted-foreground italic">
           {loc === "ru"
-            ? "Приблизительная оценка стилистических признаков. ЖИ-детекторы часто ошибаются на работах не-носителей языка — балл выше 70 % требует проверки учителем."
+            ? "Приблизительная оценка стилистических признаков. AI-детекторы часто ошибаются на работах не-носителей языка — балл выше 70 % требует проверки учителем."
             : "Стилистикалық белгілерді шамамен бағалау. ЖИ-детекторлары ана тілді емес адамдардың жұмыстарында жиі қателеседі — 70 %-дан жоғары балл мұғалім тексеруін қажет етеді."}
         </p>
       </CardContent>
