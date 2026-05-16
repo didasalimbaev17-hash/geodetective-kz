@@ -1,5 +1,6 @@
 import { setup, assign } from "xstate";
 import type { Scenario } from "@/schemas/case.schema";
+import type { AiGradingResponse } from "@/schemas/ai.schema";
 
 export type CaseContext = {
   scenario: Scenario;
@@ -13,12 +14,7 @@ export type CaseContext = {
     ai: number;
     total: number;
   };
-  aiEvaluation: {
-    scores: Record<string, number>;
-    comments: Record<string, string>;
-    total: number;
-    overall: string;
-  } | null;
+  aiEvaluation: AiGradingResponse | null;
   hintsUsed: number;
   startedAt: number;
 };

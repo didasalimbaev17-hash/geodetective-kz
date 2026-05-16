@@ -175,6 +175,9 @@ export const aiEvaluations = pgTable("ai_evaluations", {
   teacherOverrideScore: integer("teacher_override_score"),
   teacherComment: text("teacher_comment"),
   flaggedForReview: boolean("flagged_for_review").default(false),
+  // AI-генерация эссе: 0..100 (0=ученик, 100=AI). Эвристика через Claude.
+  aiSuspicionScore: integer("ai_suspicion_score").default(0),
+  aiSuspicionFlags: jsonb("ai_suspicion_flags").$type<string[]>().default([]),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

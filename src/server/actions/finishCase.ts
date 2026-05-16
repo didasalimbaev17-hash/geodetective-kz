@@ -36,6 +36,8 @@ export type FinishCaseInput = {
       offTopic?: boolean;
       tooShort?: boolean;
     };
+    aiSuspicionScore?: number;
+    aiSuspicionFlags?: string[];
   } | null;
   modelUsed?: string;
   timeSpentSeconds?: number;
@@ -150,6 +152,8 @@ export async function finishCaseAction(
         overallComment: input.aiEvaluation.overall ?? null,
         claudeRawResponse: input.aiEvaluation,
         flaggedForReview: input.aiEvaluation.flags?.offTopic ?? false,
+        aiSuspicionScore: input.aiEvaluation.aiSuspicionScore ?? 0,
+        aiSuspicionFlags: input.aiEvaluation.aiSuspicionFlags ?? [],
       });
     }
 

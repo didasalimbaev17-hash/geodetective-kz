@@ -14,6 +14,7 @@ import { Link } from "@/i18n/routing";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { AiSuspicionCard } from "@/components/game/AiSuspicionCard";
 import {
   ArrowLeft,
   Brain,
@@ -28,6 +29,8 @@ type AiRubric = {
   rubricComments: Record<string, string>;
   overallComment: string | null;
   totalScore: number;
+  aiSuspicionScore: number;
+  aiSuspicionFlags: string[];
 };
 
 export default async function FinishedSessionPage({
@@ -84,6 +87,8 @@ export default async function FinishedSessionPage({
       rubricComments: aiEvaluations.rubricComments,
       overallComment: aiEvaluations.overallComment,
       totalScore: aiEvaluations.totalScore,
+      aiSuspicionScore: aiEvaluations.aiSuspicionScore,
+      aiSuspicionFlags: aiEvaluations.aiSuspicionFlags,
     })
     .from(aiEvaluations)
     .where(eq(aiEvaluations.sessionId, sessionId))
@@ -96,6 +101,8 @@ export default async function FinishedSessionPage({
           (aiRow.rubricComments as Record<string, string>) ?? {},
         overallComment: aiRow.overallComment,
         totalScore: aiRow.totalScore ?? 0,
+        aiSuspicionScore: aiRow.aiSuspicionScore ?? 0,
+        aiSuspicionFlags: (aiRow.aiSuspicionFlags as string[]) ?? [],
       }
     : null;
 
@@ -245,6 +252,15 @@ export default async function FinishedSessionPage({
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* AI suspicion check */}
+      {ai && (
+        <AiSuspicionCard
+          score={ai.aiSuspicionScore}
+          flags={ai.aiSuspicionFlags}
+          locale={locale}
+        />
       )}
 
       {/* Real world facts */}

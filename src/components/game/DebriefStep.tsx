@@ -20,6 +20,7 @@ import {
   Brain,
   TrendingUp,
 } from "lucide-react";
+import { AiSuspicionCard } from "./AiSuspicionCard";
 
 export function DebriefStep({
   scenario,
@@ -68,6 +69,8 @@ export function DebriefStep({
             total: aiEvaluation.total,
             overall: aiEvaluation.overall,
             flags: aiEvaluation.flags,
+            aiSuspicionScore: aiEvaluation.aiSuspicionScore,
+            aiSuspicionFlags: aiEvaluation.aiSuspicionFlags,
           }
         : null,
       timeSpentSeconds,
@@ -204,6 +207,14 @@ export function DebriefStep({
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {aiEvaluation && (
+        <AiSuspicionCard
+          score={aiEvaluation.aiSuspicionScore ?? 0}
+          flags={aiEvaluation.aiSuspicionFlags ?? []}
+          locale={locale}
+        />
       )}
 
       <Card className="mb-6">
