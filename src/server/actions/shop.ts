@@ -1,9 +1,11 @@
 "use server";
 
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getDb } from "@/server/db";
 import {
+  classroomMembers,
+  classrooms,
   profiles,
   shopItems,
   shopPurchases,
@@ -172,5 +174,138 @@ export async function markPurchaseUsedAction(
   } catch (err) {
     console.error("[markPurchaseUsedAction]", err);
     return { ok: false };
+  }
+}
+
+// ============================================================
+// TEACHER VIEW — учитель видит активные покупки учеников своего класса
+// ============================================================
+
+export type StudentActivePurchase = {
+  studentId: string;
+  purchaseId: string;
+  itemSlug: string;
+  titleKk: string;
+  titleRu: string;
+  icon: string;
+  costPaid: number;
+  purchasedAt: Date;
+};
+
+/**
+ * Returns active (unused) purchases for all students in a classroom.
+ * Verifies that the calling user is the teacher who owns that classroom.
+ */
+export async function getClassroomActivePurchasesAction(
+  classroomId: string
+): Promise<StudentActivePurchase[]> {
+  try {
+    const user = await getSessionUser();
+    if (!user) return [];
+    const db = getDb();
+
+    // Ownership check: classroom belongs to this teacher
+    const [room] = await db
+      .select({ id: classrooms.id })
+      .from(classrooms)
+      .where(
+        and(eq(classrooms.id, classroomId), eq(classrooms.teacherId, user.id))
+      )
+      .limit(1);
+    if (!room) return [];
+
+    const members = await db
+      .select({ id: classroomMembers.studentId })
+      .from(classroomMembers)
+      .where(eq(classroomMembers.classroomId, classroomId));
+    const memberIds = members.map((m) => m.id);
+    if (memberIds.length === 0) return [];
+
+    const rows = await db
+      .select({
+        studentId: shopPurchases.userId,
+        purchaseId: shopPurchases.id,
+        itemSlug: shopItems.slug,
+        titleKk: shopItems.titleKk,
+        titleRu: shopItems.titleRu,
+        icon: shopItems.icon,
+        costPaid: shopPurchases.costPaid,
+        purchasedAt: shopPurchases.purchasedAt,
+      })
+      .from(shopPurchases)
+      .innerJoin(shopItems, eq(shopPurchases.itemId, shopItems.id))
+      .where(
+        and(
+          inArray(shopPurchases.userId, memberIds),
+          eq(shopPurchases.state, "active")
+        )
+      )
+      .orderBy(desc(shopPurchases.purchasedAt));
+
+    return rows;
+  } catch (err) {
+    console.error("[getClassroomActivePurchasesAction]", err);
+    return [];
+  }
+}
+
+/**
+ * Teacher marks a student's purchase as "used" — used when the teacher
+ * has applied the privilege in class (e.g. allowed the student to skip
+ * the blackboard). Verifies that the purchase belongs to a student in
+ * one of the teacher's classrooms.
+ */
+export async function teacherMarkPurchaseUsedAction(
+  purchaseId: string,
+  classroomId: string
+): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const user = await getSessionUser();
+    if (!user) return { ok: false, error: "no_user" };
+    const db = getDb();
+
+    // Ownership: classroom must belong to teacher
+    const [room] = await db
+      .select({ id: classrooms.id })
+      .from(classrooms)
+      .where(
+        and(eq(classrooms.id, classroomId), eq(classrooms.teacherId, user.id))
+      )
+      .limit(1);
+    if (!room) return { ok: false, error: "not_owner" };
+
+    // Purchase must belong to a student in that classroom
+    const [purchase] = await db
+      .select({
+        id: shopPurchases.id,
+        studentId: shopPurchases.userId,
+      })
+      .from(shopPurchases)
+      .where(eq(shopPurchases.id, purchaseId))
+      .limit(1);
+    if (!purchase) return { ok: false, error: "not_found" };
+
+    const [member] = await db
+      .select({ id: classroomMembers.studentId })
+      .from(classroomMembers)
+      .where(
+        and(
+          eq(classroomMembers.classroomId, classroomId),
+          eq(classroomMembers.studentId, purchase.studentId)
+        )
+      )
+      .limit(1);
+    if (!member) return { ok: false, error: "not_in_class" };
+
+    await db
+      .update(shopPurchases)
+      .set({ state: "used", usedAt: new Date() })
+      .where(eq(shopPurchases.id, purchaseId));
+
+    revalidatePath(`/teacher/class/${classroomId}`);
+    return { ok: true };
+  } catch (err) {
+    console.error("[teacherMarkPurchaseUsedAction]", err);
+    return { ok: false, error: "unknown" };
   }
 }

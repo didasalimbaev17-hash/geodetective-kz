@@ -5,6 +5,7 @@ import {
   getClassroomDetailsAction,
   getClassroomCaseProgressAction,
 } from "@/server/actions/classrooms";
+import { getClassroomActivePurchasesAction } from "@/server/actions/shop";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { Link } from "@/i18n/routing";
 import { AddStudentDialog } from "@/components/teacher/AddStudentDialog";
 import { RemoveStudentButton } from "@/components/teacher/RemoveStudentButton";
+import { StudentPurchases } from "@/components/teacher/StudentPurchases";
 import {
   ArrowLeft,
   Users,
@@ -47,6 +49,15 @@ export default async function ClassroomDetailPage({
 
   const progress = await getClassroomCaseProgressAction(id);
   const progressMap = new Map(progress.map((p) => [p.scenarioSlug, p.completedBy]));
+
+  const allPurchases = await getClassroomActivePurchasesAction(id);
+  const purchasesByStudent = new Map<string, typeof allPurchases>();
+  for (const p of allPurchases) {
+    const list = purchasesByStudent.get(p.studentId) ?? [];
+    list.push(p);
+    purchasesByStudent.set(p.studentId, list);
+  }
+  const localeForClient: "kk" | "ru" = locale === "ru" ? "ru" : "kk";
 
   const removeConfirm =
     locale === "ru"
@@ -117,34 +128,42 @@ export default async function ClassroomDetailPage({
                   totalForClass === 0
                     ? 0
                     : Math.round((s.completedCount / totalForClass) * 100);
+                const studentPurchases = purchasesByStudent.get(s.id) ?? [];
                 return (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border/60 bg-card/40"
+                    className="p-3 rounded-lg border border-border/60 bg-card/40"
                   >
-                    <div className="min-w-0 flex-1">
-                      <div className="font-medium text-sm truncate">
-                        {s.fullName ?? s.email.split("@")[0]}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-sm truncate">
+                          {s.fullName ?? s.email.split("@")[0]}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {s.email}
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {s.email}
+                      <div className="hidden sm:flex items-center gap-2 text-xs">
+                        <Sparkles className="size-3.5 text-primary" />
+                        <span className="font-mono">{s.xp} XP</span>
                       </div>
-                    </div>
-                    <div className="hidden sm:flex items-center gap-2 text-xs">
-                      <Sparkles className="size-3.5 text-primary" />
-                      <span className="font-mono">{s.xp} XP</span>
-                    </div>
-                    <div className="w-32 flex-shrink-0">
-                      <div className="text-xs text-muted-foreground mb-1">
-                        {s.completedCount}/{totalForClass}{" "}
-                        {locale === "ru" ? "кейсов" : "кейс"}
+                      <div className="w-32 flex-shrink-0">
+                        <div className="text-xs text-muted-foreground mb-1">
+                          {s.completedCount}/{totalForClass}{" "}
+                          {locale === "ru" ? "кейсов" : "кейс"}
+                        </div>
+                        <Progress value={ratio} className="h-1" />
                       </div>
-                      <Progress value={ratio} className="h-1" />
+                      <RemoveStudentButton
+                        classroomId={room.id}
+                        studentId={s.id}
+                        confirmMessage={removeConfirm}
+                      />
                     </div>
-                    <RemoveStudentButton
+                    <StudentPurchases
+                      purchases={studentPurchases}
                       classroomId={room.id}
-                      studentId={s.id}
-                      confirmMessage={removeConfirm}
+                      locale={localeForClient}
                     />
                   </div>
                 );

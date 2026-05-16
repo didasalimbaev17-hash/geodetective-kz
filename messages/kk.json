@@ -198,7 +198,11 @@
     "completionRate": "Аяқтау %",
     "averageScore": "Орташа балл",
     "pendingReviews": "Күтудегі бағалаулар",
-    "overrideAi": "ЖИ бағасын түзету"
+    "overrideAi": "ЖИ бағасын түзету",
+    "purchases": {
+      "title": "Белсенді сатып алулар",
+      "apply": "Қолдандым"
+    }
   },
   "finished": {
     "title": "Аяқталған кейстер",

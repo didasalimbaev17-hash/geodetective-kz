@@ -198,7 +198,11 @@
     "completionRate": "% завершения",
     "averageScore": "Средний балл",
     "pendingReviews": "Ожидают проверки",
-    "overrideAi": "Корректировать AI"
+    "overrideAi": "Корректировать AI",
+    "purchases": {
+      "title": "Активные покупки",
+      "apply": "Применил"
+    }
   },
   "finished": {
     "title": "Завершённые дела",
