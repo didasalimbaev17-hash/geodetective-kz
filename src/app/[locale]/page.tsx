@@ -112,7 +112,7 @@ export default async function LandingPage({
             <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-border/40 rounded-2xl overflow-hidden glass-panel">
               {[
                 { value: "6", label: locale === "ru" ? "Кейсов готово" : "Кейс дайын" },
-                { value: "AI", label: locale === "ru" ? "Оценка на казахском" : "Қазақша бағалау" },
+                { value: locale === "ru" ? "AI" : "ЖИ", label: locale === "ru" ? "Оценка на казахском" : "Қазақша бағалау" },
                 { value: "2", label: locale === "ru" ? "Языка" : "Тіл" },
                 { value: "10-11", label: locale === "ru" ? "Класс" : "Сынып" },
               ].map((s, i) => (
