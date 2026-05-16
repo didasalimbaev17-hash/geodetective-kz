@@ -142,7 +142,7 @@ export default async function FinishedCasesPage({
                     {t("finished.completedOn", { date: finishedAt })}
                   </p>
                   <Link
-                    href={`/student/case/${s.scenarioSlug}` as never}
+                    href={`/student/finished/${s.sessionId}` as never}
                     className="block"
                   >
                     <Button
