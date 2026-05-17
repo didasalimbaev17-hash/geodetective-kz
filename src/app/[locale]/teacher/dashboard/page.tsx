@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
 import { CreateClassroomForm } from "@/components/teacher/CreateClassroomForm";
-import { Users, BookOpen, GraduationCap, ArrowRight } from "lucide-react";
+import { Users, BookOpen, GraduationCap, ArrowRight, Plus, Sparkles } from "lucide-react";
 
 export default async function TeacherDashboard({
   params,
@@ -43,7 +43,7 @@ export default async function TeacherDashboard({
         <CreateClassroomForm triggerLabel={t("teacher.createClass")} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card>
           <CardContent className="p-6">
             <Users className="size-5 text-primary mb-2" />
@@ -61,6 +61,25 @@ export default async function TeacherDashboard({
             </div>
             <div className="text-sm text-muted-foreground">
               {t("teacher.classesTitle")}
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="opacity-60 cursor-not-allowed border-dashed">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-2">
+              <Plus className="size-5 text-warning" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider bg-warning/15 text-warning px-2 py-0.5 rounded-full border border-warning/30">
+                <Sparkles className="size-2.5" />
+                {locale === "ru" ? "Скоро" : "Жақын арада"}
+              </span>
+            </div>
+            <div className="text-lg font-bold font-display leading-tight mb-1">
+              {locale === "ru" ? "Создать кейс" : "Кейс құру"}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {locale === "ru"
+                ? "Конструктор для собственных сценариев"
+                : "Өз сценарийлеріңізге арналған конструктор"}
             </div>
           </CardContent>
         </Card>

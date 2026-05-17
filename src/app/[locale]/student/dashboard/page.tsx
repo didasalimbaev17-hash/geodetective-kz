@@ -43,6 +43,9 @@ export default async function StudentDashboard({
   const isSupabaseConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   if (!realUser && isSupabaseConfigured) redirect("/auth/login");
+  if (realUser && (realUser.role === "teacher" || realUser.role === "admin")) {
+    redirect("/teacher/dashboard");
+  }
 
   const user = realUser ?? {
     id: "demo",
@@ -105,7 +108,7 @@ export default async function StudentDashboard({
         <StatCard
           icon={Sparkles}
           label="XP"
-          value={`${user.xp}/100`}
+          value={`${user.xp}/50`}
           tone="secondary"
           href="/student/shop"
         />

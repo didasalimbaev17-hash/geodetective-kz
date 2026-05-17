@@ -19,6 +19,9 @@ export default async function ProfilePage({
 
   const user = await getCurrentUserProfile();
   if (!user) redirect("/auth/login");
+  if (user.role === "teacher" || user.role === "admin") {
+    redirect("/teacher/dashboard");
+  }
 
   return (
     <div className="container max-w-3xl py-10">

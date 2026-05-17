@@ -55,6 +55,9 @@ export default async function FinishedCasesPage({
   const user = await getCurrentUserProfile();
   const isSupabaseConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
   if (!user && isSupabaseConfigured) redirect("/auth/login");
+  if (user && (user.role === "teacher" || user.role === "admin")) {
+    redirect("/teacher/dashboard");
+  }
 
   const sessions = user ? await getFinishedSessions(user.id) : [];
 

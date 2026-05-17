@@ -44,6 +44,9 @@ export default async function FinishedSessionPage({
 
   const user = await getCurrentUserProfile();
   if (!user) redirect("/auth/login");
+  if (user.role === "teacher" || user.role === "admin") {
+    redirect("/teacher/dashboard");
+  }
 
   const db = getDb();
 

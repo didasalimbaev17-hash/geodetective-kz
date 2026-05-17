@@ -189,12 +189,15 @@ export type StudentActivePurchase = {
   titleRu: string;
   icon: string;
   costPaid: number;
+  state: string;
   purchasedAt: Date;
+  usedAt: Date | null;
 };
 
 /**
- * Returns active (unused) purchases for all students in a classroom.
- * Verifies that the calling user is the teacher who owns that classroom.
+ * Returns ALL purchases (active + used) for all students in a classroom.
+ * Teacher sees full history: what was bought, what was used, when.
+ * Ownership-check: classroom must belong to the calling teacher.
  */
 export async function getClassroomActivePurchasesAction(
   classroomId: string
@@ -204,7 +207,6 @@ export async function getClassroomActivePurchasesAction(
     if (!user) return [];
     const db = getDb();
 
-    // Ownership check: classroom belongs to this teacher
     const [room] = await db
       .select({ id: classrooms.id })
       .from(classrooms)
@@ -230,16 +232,13 @@ export async function getClassroomActivePurchasesAction(
         titleRu: shopItems.titleRu,
         icon: shopItems.icon,
         costPaid: shopPurchases.costPaid,
+        state: shopPurchases.state,
         purchasedAt: shopPurchases.purchasedAt,
+        usedAt: shopPurchases.usedAt,
       })
       .from(shopPurchases)
       .innerJoin(shopItems, eq(shopPurchases.itemId, shopItems.id))
-      .where(
-        and(
-          inArray(shopPurchases.userId, memberIds),
-          eq(shopPurchases.state, "active")
-        )
-      )
+      .where(inArray(shopPurchases.userId, memberIds))
       .orderBy(desc(shopPurchases.purchasedAt));
 
     return rows;

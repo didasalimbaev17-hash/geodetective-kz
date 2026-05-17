@@ -21,12 +21,15 @@ export default async function ShopPage({
   const user = await getCurrentUserProfile();
   const isSupabaseConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
   if (!user && isSupabaseConfigured) redirect("/auth/login");
+  if (user && (user.role === "teacher" || user.role === "admin")) {
+    redirect("/teacher/dashboard");
+  }
 
   const items = await getShopItemsAction();
   const purchases = user ? await getMyPurchasesAction() : [];
 
   const xp = user?.xp ?? 0;
-  const capReached = xp >= 100;
+  const capReached = xp >= 50;
 
   return (
     <div className="container py-10 relative">
@@ -66,12 +69,12 @@ export default async function ShopPage({
                 </div>
                 <div className="text-4xl font-display font-bold font-numeric text-foreground">
                   {xp}
-                  <span className="text-2xl text-muted-foreground">/100</span>
+                  <span className="text-2xl text-muted-foreground">/50</span>
                 </div>
               </div>
             </div>
           </div>
-          <Progress value={xp} className="h-2" />
+          <Progress value={(xp / 50) * 100} className="h-2" />
           {capReached && (
             <p className="mt-3 text-xs text-warning font-mono">
               {t("shop.capReached")}
