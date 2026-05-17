@@ -271,6 +271,35 @@ export const shopPurchases = pgTable(
 );
 
 // ============================================================
+// CASE_IDEAS — предложения новых кейсов от учителей (заявки в конструктор)
+// ============================================================
+export const caseIdeas = pgTable(
+  "case_ideas",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    teacherId: uuid("teacher_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    grade: text("grade"), // "10" | "11" | null
+    region: text("region"),
+    description: text("description").notNull(),
+    status: text("status").notNull().default("pending"), // "pending" | "reviewed" | "approved" | "rejected"
+    adminNote: text("admin_note"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("case_ideas_teacher_idx").on(t.teacherId),
+    index("case_ideas_status_idx").on(t.status),
+  ]
+);
+
+// ============================================================
 // RELATIONS
 // ============================================================
 export const profilesRelations = relations(profiles, ({ many }) => ({
@@ -347,3 +376,4 @@ export type Classroom = typeof classrooms.$inferSelect;
 export type Badge = typeof badges.$inferSelect;
 export type ShopItem = typeof shopItems.$inferSelect;
 export type ShopPurchase = typeof shopPurchases.$inferSelect;
+export type CaseIdea = typeof caseIdeas.$inferSelect;

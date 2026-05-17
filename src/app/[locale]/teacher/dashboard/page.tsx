@@ -2,11 +2,17 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { getCurrentUserProfile } from "@/server/auth/get-user";
 import { getMyClassroomsAction } from "@/server/actions/classrooms";
+import { getMyCaseIdeasAction } from "@/server/actions/caseIdeas";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/routing";
 import { CreateClassroomForm } from "@/components/teacher/CreateClassroomForm";
-import { Users, BookOpen, GraduationCap, ArrowRight, Plus, Sparkles } from "lucide-react";
+import {
+  RequestCaseDialog,
+  RequestCaseDialogTrigger,
+  MyCaseIdeasList,
+} from "@/components/teacher/RequestCaseDialog";
+import { Users, BookOpen, GraduationCap, ArrowRight, Lightbulb } from "lucide-react";
 
 export default async function TeacherDashboard({
   params,
@@ -25,6 +31,8 @@ export default async function TeacherDashboard({
 
   const classrooms = await getMyClassroomsAction();
   const totalStudents = classrooms.reduce((s, c) => s + c.studentCount, 0);
+  const ideas = await getMyCaseIdeasAction();
+  const localeForClient: "kk" | "ru" = locale === "ru" ? "ru" : "kk";
 
   return (
     <div className="container py-10">
@@ -64,25 +72,9 @@ export default async function TeacherDashboard({
             </div>
           </CardContent>
         </Card>
-        <Card className="opacity-60 cursor-not-allowed border-dashed">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-2">
-              <Plus className="size-5 text-warning" />
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider bg-warning/15 text-warning px-2 py-0.5 rounded-full border border-warning/30">
-                <Sparkles className="size-2.5" />
-                {locale === "ru" ? "Скоро" : "Жақын арада"}
-              </span>
-            </div>
-            <div className="text-lg font-bold font-display leading-tight mb-1">
-              {locale === "ru" ? "Создать кейс" : "Кейс құру"}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {locale === "ru"
-                ? "Конструктор для собственных сценариев"
-                : "Өз сценарийлеріңізге арналған конструктор"}
-            </div>
-          </CardContent>
-        </Card>
+        <RequestCaseDialog
+          trigger={<RequestCaseDialogTrigger locale={localeForClient} />}
+        />
       </div>
 
       <Card>
@@ -145,6 +137,25 @@ export default async function TeacherDashboard({
           )}
         </CardContent>
       </Card>
+
+      {ideas.length > 0 && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="size-5 text-warning" />
+              {locale === "ru"
+                ? "Мои предложенные кейсы"
+                : "Менің ұсынған кейстерім"}
+              <span className="ml-auto text-sm text-muted-foreground font-mono">
+                {ideas.length}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MyCaseIdeasList ideas={ideas} locale={localeForClient} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

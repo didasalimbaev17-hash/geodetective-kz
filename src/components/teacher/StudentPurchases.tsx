@@ -70,36 +70,47 @@ export function StudentPurchases({
   const totalSpent = purchases.reduce((sum, p) => sum + p.costPaid, 0);
 
   return (
-    <div className="mt-3 pt-3 border-t border-border/40 space-y-3">
+    <div className="mt-3 pt-3 border-t border-border/40 space-y-4">
       {active.length > 0 && (
         <div>
-          <div className="flex items-center gap-1.5 mb-2 text-xs text-muted-foreground uppercase tracking-wider">
-            <ShoppingBag className="size-3 text-success" />
-            {t("title")} ({active.length})
+          <div className="flex items-center gap-1.5 mb-2 text-xs uppercase tracking-wider font-semibold">
+            <ShoppingBag className="size-3.5 text-success" />
+            <span className="text-success">
+              {locale === "ru" ? "Купил — ждёт применения" : "Сатып алды — қолдануды күтуде"}
+            </span>
+            <span className="text-muted-foreground">({active.length})</span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="space-y-1.5">
             {active.map((p) => {
               const Icon = ICON_MAP[p.icon] ?? Sparkles;
               const title = locale === "ru" ? p.titleRu : p.titleKk;
+              const purchasedAt = dateFormatter.format(new Date(p.purchasedAt));
               return (
                 <div
                   key={p.purchaseId}
-                  className="inline-flex items-center gap-2 pl-2 pr-1 py-1 rounded-md bg-success/10 border border-success/30 text-xs"
+                  className="flex items-center justify-between gap-3 p-2.5 rounded-md bg-success/5 border border-success/20"
                 >
-                  <Icon className="size-3.5 text-success" strokeWidth={1.5} />
-                  <span className="font-medium truncate max-w-[200px]">
-                    {title}
-                  </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    −{p.costPaid} XP
-                  </span>
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <div className="size-8 rounded-md bg-success/15 flex items-center justify-center flex-shrink-0">
+                      <Icon className="size-4 text-success" strokeWidth={1.5} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium leading-tight">
+                        {title}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground font-mono mt-0.5">
+                        −{p.costPaid} XP ·{" "}
+                        {locale === "ru" ? "куплено " : "сатып алынды "}
+                        {purchasedAt}
+                      </div>
+                    </div>
+                  </div>
                   <Button
                     size="sm"
-                    variant="ghost"
-                    className="h-6 px-2 text-xs gap-1 text-success hover:text-success hover:bg-success/10"
+                    variant="outline"
+                    className="h-7 px-3 text-xs gap-1 border-success/40 text-success hover:bg-success/10 flex-shrink-0"
                     disabled={pending}
                     onClick={() => handleApply(p.purchaseId)}
-                    title={t("apply")}
                   >
                     <CheckCircle2 className="size-3.5" />
                     {t("apply")}
@@ -113,47 +124,69 @@ export function StudentPurchases({
 
       {used.length > 0 && (
         <div>
-          <div className="flex items-center gap-1.5 mb-2 text-xs text-muted-foreground uppercase tracking-wider">
-            <Clock className="size-3" />
-            {locale === "ru" ? "Использовано" : "Қолданылған"} ({used.length})
-            <span className="ml-auto font-mono normal-case text-[10px]">
-              {locale === "ru" ? "Всего: " : "Барлығы: "}
-              {totalSpent} XP
+          <div className="flex items-center gap-1.5 mb-2 text-xs uppercase tracking-wider font-semibold">
+            <Clock className="size-3.5" />
+            <span>
+              {locale === "ru"
+                ? "Уже применено учителем"
+                : "Мұғалім қолдандыр"}
+            </span>
+            <span className="text-muted-foreground">({used.length})</span>
+            <span className="ml-auto font-mono normal-case text-[11px] text-muted-foreground">
+              {locale === "ru" ? "Потрачено: " : "Жұмсалды: "}
+              <span className="text-foreground">{totalSpent} XP</span>
             </span>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {used.slice(0, 8).map((p) => {
+          <div className="space-y-1">
+            {used.slice(0, 6).map((p) => {
               const Icon = ICON_MAP[p.icon] ?? Sparkles;
               const title = locale === "ru" ? p.titleRu : p.titleKk;
-              const date = p.usedAt
+              const purchasedAt = dateFormatter.format(new Date(p.purchasedAt));
+              const usedAt = p.usedAt
                 ? dateFormatter.format(new Date(p.usedAt))
                 : "—";
               return (
                 <div
                   key={p.purchaseId}
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/20 border border-border/40 text-[11px] text-muted-foreground"
-                  title={`${title} · ${p.costPaid} XP · ${date}`}
+                  className="flex items-center gap-2.5 p-2 rounded-md bg-muted/10 border border-border/30"
                 >
-                  <Icon className="size-3 opacity-70" strokeWidth={1.5} />
-                  <span className="truncate max-w-[140px] line-through">
-                    {title}
-                  </span>
-                  <span className="font-mono">{date}</span>
+                  <div className="size-7 rounded-md bg-muted/30 flex items-center justify-center flex-shrink-0">
+                    <Icon
+                      className="size-3.5 text-muted-foreground"
+                      strokeWidth={1.5}
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs font-medium leading-tight text-muted-foreground">
+                      {title}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground/70 font-mono mt-0.5">
+                      −{p.costPaid} XP ·{" "}
+                      {locale === "ru" ? "куплено " : "сатып алынды "}
+                      {purchasedAt}
+                      {p.usedAt && (
+                        <>
+                          {" · "}
+                          {locale === "ru" ? "применено " : "қолданылды "}
+                          {usedAt}
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
               );
             })}
-            {used.length > 8 && (
-              <span className="text-[10px] text-muted-foreground px-2 py-0.5">
-                +{used.length - 8}
-              </span>
+            {used.length > 6 && (
+              <div className="text-[10px] text-muted-foreground px-2 py-1 text-center">
+                +{used.length - 6}{" "}
+                {locale === "ru" ? "ещё" : "тағы"}
+              </div>
             )}
           </div>
         </div>
       )}
 
-      {error && (
-        <p className="mt-2 text-xs text-danger">{error}</p>
-      )}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
     </div>
   );
 }
