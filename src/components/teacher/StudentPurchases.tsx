@@ -76,7 +76,9 @@ export function StudentPurchases({
           <div className="flex items-center gap-1.5 mb-2 text-xs uppercase tracking-wider font-semibold">
             <ShoppingBag className="size-3.5 text-success" />
             <span className="text-success">
-              {locale === "ru" ? "Купил — ждёт применения" : "Сатып алды — қолдануды күтуде"}
+              {locale === "ru"
+                ? "Активные награды — ждут применения"
+                : "Белсенді сыйлықтар — қолдануды күтуде"}
             </span>
             <span className="text-muted-foreground">({active.length})</span>
           </div>
@@ -128,8 +130,8 @@ export function StudentPurchases({
             <Clock className="size-3.5" />
             <span>
               {locale === "ru"
-                ? "Уже применено учителем"
-                : "Мұғалім қолдандыр"}
+                ? "История использованных наград"
+                : "Қолданылған сыйлықтар тарихы"}
             </span>
             <span className="text-muted-foreground">({used.length})</span>
             <span className="ml-auto font-mono normal-case text-[11px] text-muted-foreground">
