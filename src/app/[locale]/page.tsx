@@ -7,6 +7,7 @@ import { CaseCover } from "@/components/art/CaseCover";
 import { HeroBackground } from "@/components/landing/HeroBackground";
 import { getAllScenarios, getScenarioMeta } from "@/data/cases";
 import { getLocalizedText } from "@/lib/utils";
+import { getCurrentUserProfile } from "@/server/auth/get-user";
 import {
   Satellite,
   Microscope,
@@ -17,6 +18,7 @@ import {
   Star,
   GraduationCap,
   Zap,
+  LayoutDashboard,
 } from "lucide-react";
 
 export default async function LandingPage({
@@ -29,6 +31,15 @@ export default async function LandingPage({
 
   const t = await getTranslations();
   const scenarios = getAllScenarios().map(getScenarioMeta);
+  const user = await getCurrentUserProfile();
+  const isTeacher = user?.role === "teacher" || user?.role === "admin";
+  const isStudent = user?.role === "student";
+  const dashboardHref = isTeacher ? "/teacher/dashboard" : "/student/dashboard";
+  const heroCtaLabel = user
+    ? locale === "ru"
+      ? "Перейти в кабинет"
+      : "Кабинетке өту"
+    : t("landing.hero.ctaPrimary");
 
   const features = [
     {
@@ -92,9 +103,13 @@ export default async function LandingPage({
                 size="lg"
                 className="text-base group h-14 px-8 shadow-glow-primary"
               >
-                <Link href="/auth/register">
-                  <Zap className="size-5" />
-                  {t("landing.hero.ctaPrimary")}
+                <Link href={user ? (dashboardHref as never) : "/auth/register"}>
+                  {user ? (
+                    <LayoutDashboard className="size-5" />
+                  ) : (
+                    <Zap className="size-5" />
+                  )}
+                  {heroCtaLabel}
                   <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -282,9 +297,30 @@ export default async function LandingPage({
               <p className="text-muted-foreground mb-8 leading-relaxed text-lg">
                 {t("landing.forTeachers.description")}
               </p>
-              <Button asChild variant="secondary" size="lg" className="gap-2 shadow-glow-secondary">
-                <Link href="/auth/register?role=teacher">
-                  {t("landing.forTeachers.cta")}
+              <Button
+                asChild
+                variant="secondary"
+                size="lg"
+                className="gap-2 shadow-glow-secondary"
+              >
+                <Link
+                  href={
+                    isTeacher
+                      ? "/teacher/dashboard"
+                      : isStudent
+                        ? (dashboardHref as never)
+                        : "/auth/register?role=teacher"
+                  }
+                >
+                  {isTeacher
+                    ? locale === "ru"
+                      ? "Открыть кабинет учителя"
+                      : "Мұғалім кабинетін ашу"
+                    : isStudent
+                      ? locale === "ru"
+                        ? "В свой кабинет"
+                        : "Өз кабинетіме"
+                      : t("landing.forTeachers.cta")}
                   <ArrowRight className="size-4" />
                 </Link>
               </Button>
