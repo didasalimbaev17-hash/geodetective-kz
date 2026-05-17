@@ -159,8 +159,8 @@ export async function finishCaseAction(
 
     // 5. XP начисление по ОС 2026-05-17:
     //    - AI оценивает по шкале 0..100 (не трогаем промпт)
-    //    - В profiles.xp пишется total / 2
-    //    - Максимум XP на счёте = 50 (cap для engagement-петли магазина, снижен со 100)
+    //    - В profiles.xp пишется total / 2 → за один кейс максимум 50 XP
+    //    - Максимум XP на счёте = 100 (ученик собирает с нескольких кейсов)
     //    - Off-topic эссе → XP = 0 (ученик не может зарабатывать за неправильную работу)
     let xpFromTotal = Math.max(0, Math.round(input.scores.total / 2));
     const isOffTopic = input.aiEvaluation?.flags?.offTopic === true;
@@ -176,7 +176,7 @@ export async function finishCaseAction(
 
     const oldXp = profileRow?.xp ?? 0;
     const oldLevel = profileRow?.level ?? 1;
-    const newXp = Math.min(50, oldXp + xpFromTotal);
+    const newXp = Math.min(100, oldXp + xpFromTotal);
     const actualGained = newXp - oldXp;
 
     if (actualGained > 0) {

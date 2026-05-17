@@ -108,7 +108,7 @@ export default async function StudentDashboard({
         <StatCard
           icon={Sparkles}
           label="XP"
-          value={`${user.xp}/50`}
+          value={`${user.xp}/100`}
           tone="secondary"
           href="/student/shop"
         />

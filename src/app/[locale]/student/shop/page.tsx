@@ -29,7 +29,7 @@ export default async function ShopPage({
   const purchases = user ? await getMyPurchasesAction() : [];
 
   const xp = user?.xp ?? 0;
-  const capReached = xp >= 50;
+  const capReached = xp >= 100;
 
   return (
     <div className="container py-10 relative">
@@ -69,12 +69,12 @@ export default async function ShopPage({
                 </div>
                 <div className="text-4xl font-display font-bold font-numeric text-foreground">
                   {xp}
-                  <span className="text-2xl text-muted-foreground">/50</span>
+                  <span className="text-2xl text-muted-foreground">/100</span>
                 </div>
               </div>
             </div>
           </div>
-          <Progress value={(xp / 50) * 100} className="h-2" />
+          <Progress value={xp} className="h-2" />
           {capReached && (
             <p className="mt-3 text-xs text-warning font-mono">
               {t("shop.capReached")}
