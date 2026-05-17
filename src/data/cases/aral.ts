@@ -696,10 +696,10 @@ export const aralScenario: Scenario = {
       },
       {
         label: {
-          kk: "Aral Sea — Wikipedia",
-          ru: "Аральское море — Википедия",
+          kk: "БҰҰ — Арал бассейні бағдарламасы",
+          ru: "ООН — Программа бассейна Аральского моря",
         },
-        url: "https://en.wikipedia.org/wiki/Aral_Sea",
+        url: "https://www.un.org/waterforlifedecade/aral_sea.shtml",
       },
     ],
     nextCaseHintId: "case-balkhash-2025",

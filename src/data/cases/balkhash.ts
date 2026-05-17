@@ -504,8 +504,11 @@ export const balkhashScenario: Scenario = {
     },
     sources: [
       {
-        label: { kk: "Балқаш — Википедия", ru: "Балхаш — Википедия" },
-        url: "https://en.wikipedia.org/wiki/Lake_Balkhash",
+        label: {
+          kk: "Рамсар конвенциясы — Іле-Балқаш сулы-батпақты алқабы",
+          ru: "Рамсарская конвенция — Или-Балхашские водно-болотные угодья",
+        },
+        url: "https://rsis.ramsar.org/ris/2020",
       },
     ],
     nextCaseHintId: "case-almaty-smog-2025",

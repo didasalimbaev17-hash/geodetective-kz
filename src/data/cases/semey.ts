@@ -492,8 +492,11 @@ export const semeyScenario: Scenario = {
     },
     sources: [
       {
-        label: { kk: "Невада-Семей қозғалысы", ru: "Движение Невада-Семипалатинск" },
-        url: "https://en.wikipedia.org/wiki/Nevada_Semipalatinsk_Movement",
+        label: {
+          kk: "ҚР Заңы №1787 — Семей полигонынан зардап шеккендерді әлеуметтік қорғау",
+          ru: "Закон РК №1787 — Соцзащита пострадавших от Семипалатинского полигона",
+        },
+        url: "https://adilet.zan.kz/rus/docs/Z920004500_",
       },
     ],
     nextCaseHintId: "case-caspian-2025",

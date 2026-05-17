@@ -492,8 +492,11 @@ export const irtyshScenario: Scenario = {
     },
     sources: [
       {
-        label: { kk: "Irtysh River — Wikipedia", ru: "Иртыш — Википедия" },
-        url: "https://en.wikipedia.org/wiki/Irtysh_River",
+        label: {
+          kk: "БҰҰ ЕЭК — Трансшекаралық сулар туралы конвенция",
+          ru: "ЕЭК ООН — Конвенция о трансграничных водах",
+        },
+        url: "https://unece.org/environment-policy/water",
       },
     ],
   },
