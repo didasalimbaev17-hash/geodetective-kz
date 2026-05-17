@@ -91,8 +91,8 @@ export function DebriefStep({
         </div>
         <h2 className="font-display text-4xl font-bold mb-2">{t("title")}</h2>
         <div className="text-6xl md:text-7xl font-display font-bold gradient-text font-numeric mt-4">
-          {scores.total}
-          <span className="text-2xl text-muted-foreground">/100</span>
+          {Math.round(scores.total / 2)}
+          <span className="text-2xl text-muted-foreground">/50</span>
         </div>
       </div>
 

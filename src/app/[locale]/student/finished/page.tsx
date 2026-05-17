@@ -133,7 +133,7 @@ export default async function FinishedCasesPage({
                   </div>
                   <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-card/80 backdrop-blur-md border border-border/60">
                     <span className="font-mono text-xs text-foreground">
-                      {score}/100
+                      {Math.round(score / 2)}/50
                     </span>
                   </div>
                 </div>

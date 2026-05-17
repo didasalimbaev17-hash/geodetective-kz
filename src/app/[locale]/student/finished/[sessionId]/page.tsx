@@ -150,8 +150,8 @@ export default async function FinishedSessionPage({
           {title}
         </h1>
         <div className="text-6xl md:text-7xl font-display font-bold gradient-text font-numeric mt-4">
-          {total}
-          <span className="text-2xl text-muted-foreground">/100</span>
+          {Math.round(total / 2)}
+          <span className="text-2xl text-muted-foreground">/50</span>
         </div>
       </div>
 
